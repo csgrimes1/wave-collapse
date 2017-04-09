@@ -94,7 +94,7 @@ module.exports = {
 
             return iterate([Promise.resolve(2), bluebird.resolve(2), 2])
                 .series()
-                .forEach((val, index) => {
+                .forEach((val) => {
                     context.equal(val, 2);
                     spy();
                     return true;

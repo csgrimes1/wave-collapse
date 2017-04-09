@@ -7,6 +7,7 @@ module.exports = function () {
     const producer = (callback) => {
         return new Promise(resolve => {
             setTimeout(() => {
+                console.log('**************************')
                 callback(num, num - 1, false);
                 num++;
                 resolve(num);

@@ -6,6 +6,7 @@ const recursive = require('./recursive'),
     synchPromise = require('./sync-promise'),
     pair = (entry) => entry,
     valueOnly = (entry => entry[1]),
+    map = require('./map'),
     filter = require('./filter'),
     typetester = require('./typetester'),
     skipModule = require('./skip'),
@@ -128,6 +129,7 @@ function completeIterator(innerObject, callbackProcessor, predicate) {
 
     return Object.assign(innerObject, {
         visit,
+        map,
         filter,
         skip: skipModule.skip,
         skipWhile: skipModule.skipWhile,
