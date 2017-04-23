@@ -9,7 +9,7 @@ module.exports = {
     },
 
     tests: {
-        'should handle an async producer': context => {
+        'skip!should handle an async producer': context => {
             return iterate(asyncProducer())
                 .series()
                 .take(5)

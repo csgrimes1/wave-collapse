@@ -7,7 +7,7 @@ function skipWhile (predicate) {
 }
 
 function skip (howMany) {
-    return skipWhile.call(this, (val, index) => index < howMany);
+    return this.skipWhile((val, index) => index < howMany);
 }
 
 module.exports = {

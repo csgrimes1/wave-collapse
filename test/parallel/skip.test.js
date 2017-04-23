@@ -1,6 +1,6 @@
 'use strict';
 
-const iterate = require('../src/iterate'),
+const iterate = require('../../src/iterate'),
     sinon = require('sinon');
 
 module.exports = {
@@ -14,11 +14,8 @@ module.exports = {
 
             iterate([11, 12, 13, 14, 15, 16, 17, 18])
                 .skip(3)
-                .visit(node => {
-                    if (node.valid) {
-                        synchronousSpy();
-                    }
-
+                .forEach(() => {
+                    synchronousSpy();
                     return true;
                 });
                 context.equal(synchronousSpy.callCount, 5, 'ran synchronously');

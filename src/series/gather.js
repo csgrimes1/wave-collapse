@@ -6,7 +6,6 @@ module.exports = function gather () {
     return new Promise((resolve) => {
         let ar = []; //eslint-disable-line
         const callback = (data) => {
-                console.log(`data: ${JSON.stringify(data)}`)
             if (data.valid) {
                 ar.push(data.value);
                 return true;

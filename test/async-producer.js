@@ -3,17 +3,11 @@
 const iterate = require('../src/iterate');
 
 module.exports = function () {
-    let num = 1;
-    const producer = (callback) => {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                console.log('**************************')
-                callback(num, num - 1, false);
-                num++;
-                resolve(num);
-            }, 0);
-        });
+    const producer = function *() {
+        for (let num = 1; num > 0; num++) {
+            yield num;
+        }
     };
 
-    return iterate(producer);
+    return iterate(producer());
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const iterate = require('../src/iterate'),
+const iterate = require('../../src/iterate'),
     sinon = require('sinon');
 
 module.exports = {

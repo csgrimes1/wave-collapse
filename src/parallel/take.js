@@ -2,19 +2,19 @@
 
 function takeWhile (predicate) {
     const me = this,
-        producer = function (callback) {
-            const localCallback = (val, index, done) => {
+        producer = function *() {
+            let index = 0;
+            for (const val of me) {
                 if (predicate(val, index)) {
-                    return callback(val, index, done);
+                    yield val;
                 } else {
-                    return false;
+                    break;
                 }
-            };
-
-            return me.produce(localCallback);
+                index++;
+            }
         };
 
-    return me.internalApi.wrapIterator(producer);
+    return me.internalApi.reiterate(producer());
 }
 
 function take (howMany) {

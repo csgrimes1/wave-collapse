@@ -1,7 +1,7 @@
 'use strict';
 
-const iterate = require('../src/iterate'),
-    syncGenerator = require('./sync-generator'),
+const iterate = require('../../src/iterate'),
+    syncGenerator = require('../sync-generator'),
     sinon = require('sinon');
 
 process.on('uncaughtException', (x) => {
@@ -22,14 +22,12 @@ module.exports = {
 
             iterate(syncGenerator())
                 .take(5)
-                .visit(node => {
-                    if (node.valid) {
-                        synchronousSpy();
-                    }
+                .forEach(() => {
+                    synchronousSpy();
 
                     return true;
                 });
-                context.equal(synchronousSpy.callCount, 5, 'ran synchronously');
+            context.equal(synchronousSpy.callCount, 5, 'ran synchronously');
         },
         'take should iterate first n elements': context => {
             return iterate([1, 2, 3, 4, 5, 6, 7])
