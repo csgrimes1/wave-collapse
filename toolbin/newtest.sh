@@ -1,3 +1,12 @@
 #!/usr/bin/env bash
 
-$(npm bin)/newTest test "$1.test" bare
+TARGETDIR=$(dirname "$1")
+TESTNAME=$(basename "$1")
+
+if [ -z "$TARGETDIR" ]; then
+    FINALDIR="test"
+else
+    FINALDIR="test/$TARGETDIR"
+fi
+
+$(npm bin)/newTest "$FINALDIR" "$TESTNAME.test" bare

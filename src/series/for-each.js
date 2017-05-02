@@ -1,28 +1,13 @@
 'use strict';
 
+const serialLoop = require('./serial-loop');
 
 module.exports = function forEach (callback) {
-    const iteration = this;
+    let count = 0;
+    const countingCallback = () => {
+        count++;
+    };
 
-    return new Promise((resolve, reject) => {
-        let count = 0;
-        let error;
-        const callbackWrapper = (data) => {
-            if (data.valid) {
-                try {
-                    const res = callback(data.value, data.index);
-                    count++;
-                    return res;
-                } catch (x) {
-                    reject(x);
-                    error = x;
-                }
-            } else if (!error) {
-                resolve(count);
-            }
-            return false;
-        };
-
-        iteration.visit(callbackWrapper);
-    });
+    return serialLoop(this, countingCallback, () => true, callback)
+        .then(() => count);
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-const asyncProducer = require('./async-producer'),
+const asyncProducer = require('./series/promise-iterable'),
     iterate = require('../src/iterate');
 
 module.exports = {
