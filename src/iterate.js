@@ -13,7 +13,7 @@ const
         if (target === undefined) {
             return construct([]);
         } else if (target === null) {
-        } else if (target.hasOwnProperty(Symbol.iterator)) {
+        } else if (Object.hasOwnProperty(target.Symbol.iterator)) {
             return target[Symbol.iterator];
         } else if (typetester.isIterator(target)) {
             return function *() {

@@ -1,6 +1,7 @@
 'use strict';
 
 const pipe = require('../src/pipe');
+const sinon = require('sinon');
 const normalReceiver = {
     data: ['a', 'b', 'c', 'd'],
     calls: 0,
@@ -23,6 +24,29 @@ const normalReceiver = {
     },
     error: () => null
 };
+const errorGeneratingReceiver = Object.assign({}, normalReceiver, {
+    onMessage: function () {
+        this.calls = this.calls + 1;
+        if (this.calls >= 2) {
+            throw new Error('leaving this closure');
+        }
+        const result = this.data[0];
+        this.data = this.data.slice(1);
+        return result;
+    }
+});
+const errorIndicatingReceiver = Object.assign({}, normalReceiver, {
+    onMessage: function () {
+        const result = this.data[0];
+        this.data = this.data.slice(1);
+        this.lastError = new Error('?');
+        return result;
+    },
+    error: function () {
+        return this.lastError;
+    }
+});
+
 const iterate = require('../src/iterate');
 
 module.exports = {
@@ -36,12 +60,49 @@ module.exports = {
 
             return iterate(standardIterable)
                 .series()
-                .forEach((item, index) => {
-                    console.log(`item[${index}]: ${item}`)
+                .forEach(() => {
                     return true;
                 })
                 .then(count => {
                     context.equal(count, normalReceiver.data.length, 'should consume all data');
+                });
+        },
+
+        // 'pipe receiver returns error': context => {
+        //     const standardIterable = pipe.createIterablePipe(Object.assign({}, errorGeneratingReceiver));
+        //     const catchSpy = sinon.spy();
+        //     const countSpy = sinon.spy();
+        //     return iterate(standardIterable)
+        //         .series()
+        //         .forEach(() => {
+        //             countSpy();
+        //             return true;
+        //         })
+        //         .catch(() => {
+        //             catchSpy();
+        //         })
+        //         .then(() => {
+        //             context.equal(countSpy.callCount, 1, 'counted one iteration');
+        //             context.equal(catchSpy.callCount, 1, 'hit the catch block');
+        //         });
+        // },
+
+        'pipe receiver indicates error through error() method': context => {
+            const standardIterable = pipe.createIterablePipe(Object.assign({}, errorIndicatingReceiver));
+            const catchSpy = sinon.spy();
+            const countSpy = sinon.spy();
+            return iterate(standardIterable)
+                .series()
+                .forEach(() => {
+                    countSpy();
+                    return true;
+                })
+                .catch(() => {
+                    catchSpy();
+                })
+                .then(() => {
+                    context.equal(countSpy.callCount, 1, 'should receive one iteration call');
+                    context.equal(catchSpy.callCount, 1, 'should catch an error');
                 });
         }
     }
