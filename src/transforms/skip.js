@@ -1,14 +1,15 @@
 'use strict';
 
-module.exports = () => {
-    let skipped = -1;
-
-    return (item, index, numberToSkip) => {
-        skipped += 1;
-        if (skipped >= numberToSkip) {
-            return [item];
-        } else {
-            return [];
+module.exports = (numberToSkip) => {
+    return {
+        transformIteration: function *(collection) {
+            let skipped = 0;
+            for (const item of collection) {
+                if (skipped++ >= numberToSkip) {
+                    return;
+                }
+                yield item;
+            }
         }
     };
 };

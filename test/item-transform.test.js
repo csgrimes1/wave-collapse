@@ -4,6 +4,16 @@ const itemTransform = require('../src/item-transform');
 const mappingTransform = () => item => [item * 2];
 const filterTransform = () => item => item === isFinite || item % 2 === 1 ? [item] : [];
 const flattenTransform = () => item => item;
+const endTransform = (collection) => function *() {
+    console.log(`collection: ${collection}`)
+    for (const member of collection) {
+        if (member <= 100) {
+            yield member;
+        } else {
+            return;
+        }
+    }
+};
 
 module.exports = {
     beforeTest: t => {
@@ -28,6 +38,17 @@ module.exports = {
             const ar = Array.from(itemTransform(inputArray, []));
 
             context.deepEqual(ar, inputArray);
+        },
+
+        'endcap support': context => {
+            const gen = function *() {
+                for (let n = 95; n < 180; n++) {
+                    yield n;
+                }
+            };
+            const ar = Array.from(itemTransform(gen(), [filterTransform, endTransform, mappingTransform]));
+
+            context.deepEqual(ar, [95, 97, 99]);
         }
     }
 };

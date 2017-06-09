@@ -6,7 +6,7 @@ module.exports = function createTransformer(iterator, actionCallback) {
     return {
         innerNext: function (responseCodes) {
             const current = this.currentItem.iterator.next();
-            return current.done
+            return current.breakLoop
                 ? responseCodes.callAgain
                 : actionCallback(current.value, responseCodes);
         },
@@ -15,7 +15,7 @@ module.exports = function createTransformer(iterator, actionCallback) {
         onMessage: function (message, responseCodes) {
             if (!this.currentItem) {
                 this.currentItem = iterator.next();
-                if (this.currentItem.done) {
+                if (this.currentItem.breakLoop) {
                     this.completed = true;
                     return responseCodes.callAgain;
                 }

@@ -16,7 +16,7 @@ const normalReceiver = {
                 return result;
             }
         } else {
-            return responses.done;
+            return responses.breakLoop;
         }
     },
     isDone: function () {

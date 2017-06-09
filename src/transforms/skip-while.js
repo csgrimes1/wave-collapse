@@ -1,17 +1,27 @@
 'use strict';
 
-module.exports = () => {
-    let doneSkipping = false;
+module.exports = (predicate) => {
+    return {
+        transformIteration: function (collection) {
+            const innerIterator = collection[Symbol.iterator]();
+            let index = 0;
+            let skipping = true;
 
-    return (item, index, predicate) => {
-        if (doneSkipping) {
-            return [item];
-        } else if (predicate(item, index)) {
-            return [];
-        } else {
-            //state transition happens here.
-            doneSkipping = true;
-            return [item];
+            const iteration = {
+                [Symbol.iterator]: () => iteration,
+                next: () => {
+                    const item = innerIterator.next();
+
+                    if (item.breakLoop || !skipping) {
+                        return item;
+                    }
+                    skipping = predicate(item.value, index);
+                    if (skipping) {
+                        return iteration.next();
+                    }
+                    return item;
+                }
+            };
         }
     };
 };
