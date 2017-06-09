@@ -3,7 +3,7 @@
 let defer = require('./defer');
 
 module.exports = function (innerIterator) {
-    if (innerIterator.done) {
+    if (innerIterator.breakLoop) {
         return {done: true};
     }
 

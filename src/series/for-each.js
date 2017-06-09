@@ -22,7 +22,7 @@ module.exports = function forEach (callback) {
         return promiseTry(() => value)
             .then(value => {
                 if (!callback(value)) {
-                    return responseCodes.done;
+                    return responseCodes.breakLoop;
                 }
                 return cardXform(iterator, actionCallback);
             });

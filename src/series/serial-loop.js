@@ -1,7 +1,7 @@
 'use strict';
 
 const defaultPredicate = () => true;
-const doneValue = Symbol.done;
+const doneValue = Symbol.breakLoop;
 
 module.exports = function serialLoop (iterable, callback, predicate = defaultPredicate, continuationPredicate = defaultPredicate) {
     const iterator = iterable[Symbol.iterator](),
@@ -23,7 +23,7 @@ function visit (index, iterator, callback, predicate, continuationPredicate, don
     try {
         const result = iterator.next();
 
-        if (result.done) {
+        if (result.breakLoop) {
             doneCallback();
             return;
         }
@@ -60,7 +60,7 @@ function visit (index, iterator, callback, predicate, continuationPredicate, don
 function wrapIterator (iteratorStateMachine) {
     return {
         next: function() {
-            if (iteratorStateMachine.done) {
+            if (iteratorStateMachine.breakLoop) {
                 return iteratorStateMachine;
             }
             return Object.assign({},
@@ -82,12 +82,12 @@ module.exports.asIterator = function (iterable, predicate = defaultPredicate, co
         gate: defer()
     };
     const doneCallback = () => {
-        iteratorStateMachine.done = true;
+        iteratorStateMachine.breakLoop = true;
         delete iteratorStateMachine.value;
         iteratorStateMachine.gate.resolve(doneValue);
     };
     const errorCallback = (x) => {
-        iteratorStateMachine.done = true;
+        iteratorStateMachine.breakLoop = true;
         delete iteratorStateMachine.value;
         iteratorStateMachine.error = x;
         iteratorStateMachine.gate.resolve(doneValue);
@@ -95,7 +95,7 @@ module.exports.asIterator = function (iterable, predicate = defaultPredicate, co
     const itemCallback = (val, index) => {
         iteratorStateMachine.value = val;
         iteratorStateMachine.index = index;
-        iteratorStateMachine.done = false;
+        iteratorStateMachine.breakLoop = false;
         const oldDefer = iteratorStateMachine.gate;
         iteratorStateMachine.gate = defer();
         oldDefer.resolve(val);

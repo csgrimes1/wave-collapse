@@ -7,7 +7,7 @@ function createItemTransformer (transforms) {
     }
 
     const recurseThru = function *(item, createTransform, nextTransforms) {
-        const transform = createTransform();
+        const transform = createTransform(item);
         for (const result of transform(item, index++)) {
             if (nextTransforms.length <= 0) {
                 yield result;

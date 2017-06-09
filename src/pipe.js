@@ -48,7 +48,7 @@ function pipeIterable (pipe) {
                     .then(() => pipe.send())
                     .then(result => {
                         lastItem.resolve();
-                        iterator.done = (result === ResponseCodes.done);
+                        iterator.breakLoop = (result === ResponseCodes.breakLoop);
                         return result;
                     })
                     .catch(x => {
@@ -74,7 +74,7 @@ function createPipe (receiver) {
                     scheduleMessage(receiver, message, resolve, reject);
                 })
                 .then(result => {
-                    done = (result === ResponseCodes.done);
+                    done = (result === ResponseCodes.breakLoop);
                     return result;
                 })
                 .catch(x => {

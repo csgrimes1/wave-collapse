@@ -7,7 +7,7 @@ function takeWhile (predicate, index) {
             .next()
             .then(result => {
                 console.log('18937419384701923874019723409817234091734098170934170497823')
-                if (result.done) {
+                if (result.breakLoop) {
                     return result;
                 }
                 if (predicate(result.value, index)) {

@@ -1,6 +1,6 @@
 'use strict';
 
-const syncPromise = require('../src/sync-promise'),
+const syncPromise = require('../src/completion-monad'),
     sinon = require('sinon');
 
 module.exports = {

@@ -1,7 +1,7 @@
 'use strict';
 
 const forEach = require('./for-each'),
-    syncPromise = require('../sync-promise');
+    syncPromise = require('../completion-monad');
 
 module.exports = function synchronousGather () {
     const ar = [];

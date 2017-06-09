@@ -1,21 +1,21 @@
 'use strict';
 
-const isPromise = require('./typetester').isPromise,
+const isAsyncPromise = require('./typetester').isPromise,
     fulfilled = 0,
     rejected = 1;
 
-function isAnyKindOfPromise (value) {
-    if (value) {
-        return isPromise(value) || value instanceof SyncPromise;
+class CompletionMonad {
+    constructor () {
+        this.synchronous = true;
     }
-}
 
-class SyncPromise {
     static resolve(value) {
-        if (isAnyKindOfPromise(value)) {
+        if (isAsyncPromise(value)) {
             return Promise.resolve(value);
+        } else if (value instanceof CompletionMonad) {
+            return CompletionMonad.resolve(value.value);
         }
-        const p = new SyncPromise();
+        const p = new CompletionMonad();
 
         p.value = value;
         p.status = fulfilled;
@@ -23,10 +23,12 @@ class SyncPromise {
     }
 
     static reject(error) {
-        if (isAnyKindOfPromise(error)) {
-            return Promise.resolve(error);
+        if (isAsyncPromise(error)) {
+            return Promise.reject(error);
+        } else if (error instanceof CompletionMonad) {
+            return CompletionMonad.reject(error.error);
         }
-        const p = new SyncPromise();
+        const p = new CompletionMonad();
 
         p.error = error;
         p.status = rejected;
@@ -35,9 +37,9 @@ class SyncPromise {
 
     static attempt(callback) {
         try {
-            return SyncPromise.resolve(callback());
+            return CompletionMonad.resolve(callback());
         } catch (x) {
-            return SyncPromise.reject(x);
+            return CompletionMonad.reject(x);
         }
     }
 
@@ -46,9 +48,9 @@ class SyncPromise {
             return this;
         else {
             try {
-                return SyncPromise.resolve(callback(this.value));
+                return CompletionMonad.resolve(callback(this.value));
             } catch (x) {
-                return SyncPromise.reject(x);
+                return CompletionMonad.reject(x);
             }
         }
     }
@@ -58,9 +60,9 @@ class SyncPromise {
             return this;
         else {
             try {
-                return SyncPromise.resolve(callback(this.error));
+                return CompletionMonad.resolve(callback(this.error));
             } catch (x) {
-                return SyncPromise.reject(x);
+                return CompletionMonad.reject(x);
             }
         }
     }
@@ -93,10 +95,10 @@ function smartConstruction (callback) {
     switch (whatWasCalled) {
         //Synchronous resolve
         case 1:
-            return SyncPromise.resolve(theResult);
+            return CompletionMonad.resolve(theResult);
         //Synchronous reject
         case 2:
-            return SyncPromise.reject(theResult);
+            return CompletionMonad.reject(theResult);
 
         default:
             return new Promise(callback);
@@ -104,8 +106,9 @@ function smartConstruction (callback) {
 }
 
 module.exports = {
-    resolve: (val) => SyncPromise.resolve(val),
-    reject: (err) => SyncPromise.reject(err),
-    attempt: (callback) => SyncPromise.attempt(callback),
-    smartConstruction
+    resolve: (val) => CompletionMonad.resolve(val),
+    reject: (err) => CompletionMonad.reject(err),
+    attempt: (callback) => CompletionMonad.attempt(callback),
+    smartConstruction,
+    classType: CompletionMonad
 };
