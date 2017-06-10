@@ -24,12 +24,11 @@ class CompletionMonad {
 
     static reject(error) {
         if (isAsyncPromise(error)) {
-            return Promise.reject(error);
+            return error.catch((e) => Promise.reject(e));
         } else if (error instanceof CompletionMonad) {
             return CompletionMonad.reject(error.error);
         }
         const p = new CompletionMonad();
-
         p.error = error;
         p.status = rejected;
         return Object.freeze(p);
