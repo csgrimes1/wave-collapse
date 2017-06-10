@@ -7,7 +7,7 @@
     "lint": "$(npm bin)/eslint **/*.js",
     "newtest": "toolbin/newtest.sh",
     "plato": "$(npm bin)/plato -e $(pwd)/.eslintrc.json -r -n -d ./.plato **/*.js",
-    "test": "$(npm bin)/chi-run test apply*.test.js .testresults default coverage xunit"
+    "test": "$(npm bin)/chi-run test tr*.test.js .testresults default coverage xunit"
   },
   "keywords": [
     "functional",
@@ -18,16 +18,20 @@
   ],
   "author": "Chris Grimes",
   "license": "ISC",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "bluebird": "3.5.0",
     "chihuahua-reporters": "2.0.2",
     "chihuahua-tester": "1.0.6",
     "eslint": "^3.19.0",
     "eslint-config-recommended": "^1.5.0",
-    "nyc": "10.1.2",
+    "nyc": "^11.0.2",
     "plato": "^1.7.0",
-    "sinon": "1.17.6"
+    "sinon": "1.17.6",
+    "source-map-support": "^0.4.15"
+  },
+  "nyc": {
+    "sourceMap": true,
+    "instrument": true
   }
 }
