@@ -10,6 +10,25 @@ module.exports = {
     },
 
     tests: {
+        'stopping via callback': context => {
+            return transformConsume(generators.syncgen(10))
+                .collect((_, index) => index < 2)
+                .then(ar => {
+                    context.deepEqual(ar, [0, 1]);
+                });
+        },
+        'asynchronously stopping via callback': context => {
+            const spy = sinon.spy();
+            const p = transformConsume(generators.asyncgen(10))
+                .collect((_, index) => index < 2)
+                .then(ar => {
+                    spy();
+                    context.deepEqual(ar, [0, 1]);
+                });
+            //Should not be called in the synchronous path.
+            context.ok(!spy.called);
+            return p;
+        },
         'map': context => {
             return transformConsume(generators.syncgen(10))
                 .map(n => n * 5)
@@ -60,7 +79,6 @@ module.exports = {
                 .flatten()
                 .collect()
                 .then(ar => {
-                        console.log('13847190347901743901274908231749')
                     context.deepEqual(ar, [1, 2, 3, 4]);
                 });
         }

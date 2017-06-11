@@ -2,6 +2,7 @@
 
 const consume = require('../src/consume');
 const generators = require('./generators');
+const sinon = require('sinon');
 
 module.exports = {
     beforeTest: t => {
@@ -37,6 +38,34 @@ module.exports = {
             return consume(generators.asyncgen(count), (val) => val < stopVal)
                 .then(finalCount => {
                     context.equal(finalCount, stopVal);
+                });
+        },
+        'should reject on a callback exception': context => {
+            const e = new Error('bad');
+            const catchSpy = sinon.spy();
+            return consume(generators.syncgen(10000), () => {
+                throw e;
+            })
+                .catch(x => {
+                    catchSpy();
+                    context.equal(x, e);
+                })
+                .then(() => {
+                    context.ok(catchSpy.called);
+                });
+        },
+        'should reject on an asynchronous callback exception': context => {
+            const e = new Error('bad');
+            const catchSpy = sinon.spy();
+            return consume(generators.asyncgen(10000), () => {
+                throw e;
+            })
+                .catch(x => {
+                    catchSpy();
+                    context.equal(x, e);
+                })
+                .then(() => {
+                    context.ok(catchSpy.called);
                 });
         }
     }
