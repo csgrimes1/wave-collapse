@@ -92,6 +92,17 @@ module.exports = {
                     });
             context.ok(spy.called);
             return p;
+        },
+        'reduce asynchronous': context => {
+            const spy = sinon.spy(),
+                p = transformConsume(generators.asyncgen(3))
+                    .reduce((acc, cur) => acc + cur, 0)
+                    .then(result => {
+                        spy();
+                        context.equal(result, 3);
+                    });
+            context.ok(!spy.called);
+            return p;
         }
     }
 };

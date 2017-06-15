@@ -18,7 +18,18 @@ module.exports = function startPermutation (iterad) {
 
         const result = {
             visit: () => transformConsume(rawVisit()),
-            with: (other) => build(result.visit(), other)
+            with: function (other) {
+                return build(this.visit(), other);
+            },
+            filter: function (predicate) {
+                const selfie = this;
+                const spreadicate = function (ar) {
+                    return predicate.apply(selfie, ar);
+                };
+                return Object.assign({}, this, {
+                    visit: () => selfie.visit().filter(spreadicate)
+                })
+            }
         };
         return result;
     }
