@@ -39,6 +39,15 @@ function makeTaker (maxCount) {
     return (item) => (count++ < maxCount ? [item] : [stop]);   //eslint-disable-line
 }
 
+function reduce (iterator, accumulator, initialValue) {
+    let result = initialValue;
+    return iterator.collect((val) => {
+            result = accumulator(result, val);
+            return true;
+        })
+        .then(() => result);
+}
+
 function collect (iterator, callback = () => true) {
     const result = [];
     const callbackWrapper = (item, index) => {
@@ -71,6 +80,7 @@ function createRecursive (target, transformer) {
         skip: (count) => createRecursive(iterator, transformOver(makeSkipper(count))),
         take: (count) => createRecursive(iterator, transformOver(makeTaker(count))),
         flatten: () => createRecursive(iterator, transformOver(items => items)),
+        reduce: (accumulator, initialValue) => reduce(iterator, accumulator, initialValue),
 
         collect: (callback) => collect(iterator, callback)
     });
