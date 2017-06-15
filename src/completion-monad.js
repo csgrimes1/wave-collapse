@@ -2,7 +2,8 @@
 
 const isAsyncPromise = require('./typetester').isPromise,
     fulfilled = 0,
-    rejected = 1;
+    rejected = 1,
+    defer = require('./deferred');
 
 class CompletionMonad {
     constructor () {
@@ -71,6 +72,7 @@ class CompletionMonad {
 function smartConstruction (callback) {
     let whatWasCalled = 0;
     let theResult;
+    const deferred = defer();
     const resolve = (val) => {
         if (whatWasCalled > 0) {
             return;
@@ -78,6 +80,7 @@ function smartConstruction (callback) {
 
         whatWasCalled = 1;
         theResult = val;
+        deferred.resolve(val);
     };
     const reject = (x) => {
         if (whatWasCalled > 0) {
@@ -86,6 +89,7 @@ function smartConstruction (callback) {
 
         whatWasCalled = 2;
         theResult = x;
+        deferred.reject(x);
     };
 
     //If resolve or rect are called synchronously...
@@ -100,7 +104,7 @@ function smartConstruction (callback) {
             return CompletionMonad.reject(theResult);
 
         default:
-            return new Promise(callback);
+            return deferred.promise;
     }
 }
 

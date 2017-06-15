@@ -1,5 +1,7 @@
 'use strict';
 
+/*eslint-disable one-var-declaration-per-line*/
+
 const permutation = require('../src/permutation');
 
 module.exports = {

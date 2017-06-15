@@ -81,6 +81,17 @@ module.exports = {
                 .then(ar => {
                     context.deepEqual(ar, [1, 2, 3, 4]);
                 });
+        },
+        'reduce': context => {
+            const spy = sinon.spy(),
+                p = transformConsume(generators.syncgen(3))
+                    .reduce((acc, cur) => acc + cur, 0)
+                    .then(result => {
+                        spy();
+                        context.equal(result, 3);
+                    });
+            context.ok(spy.called);
+            return p;
         }
     }
 };
