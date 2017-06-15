@@ -8,8 +8,8 @@ module.exports = {
     of: (target) => {
         if (target === undefined) {
             return [];
-        } else if (target === null) {
-        } else if (Object.hasOwnProperty(target, Symbol.iterator)) {
+        } else if (target === null) {   //eslint-disable-line
+        } else if (Object.hasOwnProperty(target, Symbol.iterator)) {    //eslint-disable-line
             return target[Symbol.iterator];
         } else if (typetester.isIterator(target)) {
             return target;

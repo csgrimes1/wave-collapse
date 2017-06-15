@@ -2,7 +2,8 @@
 
 /*eslint-disable one-var-declaration-per-line*/
 
-const permutation = require('../src/permutation');
+const permutation = require('../src/permutation'),
+    sinon = require('sinon');
 
 module.exports = {
     beforeTest: t => {
@@ -31,6 +32,24 @@ module.exports = {
             const p = permutation(ar1);
             const result = Array.from(p.visit());
             context.deepEqual(result, [[1], [2]]);
+        },
+        'filter on permutation': context => {
+            const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [true, false],
+                spy = sinon.spy(),
+                p = permutation(ar1)
+                    .with(ar2)
+                    .filter((num, char) => char === 'b')
+                    .with(ar3);
+            return p.visit()
+                .collect(row => {
+                    spy();
+                    context.equal(row[1], 'b');
+                    return true;
+                })
+                .then(results => {
+                    context.ok(spy.called);
+                    context.equal(results.length, 4);
+                });
         }
     }
 };

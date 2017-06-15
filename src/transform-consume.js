@@ -51,7 +51,7 @@ function reduce (iterator, accumulator, initialValue) {
 function collect (iterator, callback = () => true) {
     const result = [];
     const callbackWrapper = (item, index) => {
-        console.log(`[${index}]: ${item}`)
+        //console.log(`[${index}]: ${item}`)
         if (!callback(item, index)) {
             return false;
         }
