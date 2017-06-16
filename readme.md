@@ -1,4 +1,4 @@
-## Wave Collapse
+## Wave Collapse  [![Build Status](https://travis-ci.org/csgrimes1/wave-collapse.svg?branch=master)](https://travis-ci.org/csgrimes1/wave-collapse)
 
 #### Purpose
 
