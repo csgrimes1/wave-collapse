@@ -66,9 +66,25 @@ module.exports = {
                     context.deepEqual(ar, [5, 6, 7, 8, 9]);
                 });
         },
+        'skipWhile': context => {
+            return transformConsume(generators.syncgen(10))
+                .skipWhile((item) => item < 5)
+                .collect()
+                .then(ar => {
+                    context.deepEqual(ar, [5, 6, 7, 8, 9]);
+                });
+        },
         'take': context => {
             return transformConsume(generators.syncgen(10))
                 .take(5)
+                .collect()
+                .then(ar => {
+                    context.deepEqual(ar, [0, 1, 2, 3, 4]);
+                });
+        },
+        'takeWhile': context => {
+            return transformConsume(generators.syncgen(10))
+                .takeWhile((_, index) => index < 5)
                 .collect()
                 .then(ar => {
                     context.deepEqual(ar, [0, 1, 2, 3, 4]);

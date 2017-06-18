@@ -29,14 +29,21 @@ function makeAwaiter () {
     return makeMap((item) => resumer.resumeUpon(item));
 }
 
+function makeSkipWhile (predicate) {
+    return (item, index) => (predicate(item, index) ? [] : [item]);   //eslint-disable-line
+}
+
 function makeSkipper (maxCount) {
     let count = 0;
-    return (item) => (count++ >= maxCount ? [item] : []);   //eslint-disable-line
+    return makeSkipWhile(() => count++ < maxCount);
+}
+
+function makeTakeWhile (predicate) {
+    return (item, index) => (predicate(item, index) ? [item] : [stop]);   //eslint-disable-line
 }
 
 function makeTaker (maxCount) {
-    let count = 0;
-    return (item) => (count++ < maxCount ? [item] : [stop]);   //eslint-disable-line
+    return makeTakeWhile((_, index) => index < maxCount);
 }
 
 function reduce (iterator, accumulator, initialValue) {
@@ -84,7 +91,9 @@ function createRecursive (target, transformer) {
         filter: (predicate) => createRecursive(iterator, transformOver(makeFilter(predicate))),
         awaitEach: () => createRecursive(iterator, transformOver(makeAwaiter())),
         skip: (count) => createRecursive(iterator, transformOver(makeSkipper(count))),
+        skipWhile: (predicate) => createRecursive(iterator, transformOver(makeSkipWhile(predicate))),
         take: (count) => createRecursive(iterator, transformOver(makeTaker(count))),
+        takeWhile: (predicate) => createRecursive(iterator, transformOver(makeTakeWhile(predicate))),
         flatten: () => createRecursive(iterator, transformOver(items => items)),
         reduce: (accumulator, initialValue) => reduce(iterator, accumulator, initialValue),
 
