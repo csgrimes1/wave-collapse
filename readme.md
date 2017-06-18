@@ -32,3 +32,7 @@ somewhat intuitive.
 npm install --save wave-collapse
 ```
 
+### API
+
+The module exports (2) functions, `createIterator` and `createPermutation`. Please see
+the [examples](./examples) for usage.

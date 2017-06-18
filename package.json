@@ -1,20 +1,23 @@
 {
   "name": "wave-collapse",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Efficient iteration over any object type.",
   "main": "index.js",
   "scripts": {
-    "lint": "$(npm bin)/eslint index.js **/*.js",
+    "lint": "toolbin/lint.sh",
     "newtest": "toolbin/newtest.sh",
     "plato": "$(npm bin)/plato -e $(pwd)/.eslintrc.json -r -n -d ./.plato **/*.js",
-    "test": "$(npm bin)/chi-run test *.test.js .testresults default coverage xunit"
+    "test": "toolbin/lint.sh && $(npm bin)/chi-run test *.test.js .testresults default",
+    "testcov": "$(npm bin)/chi-run test *.test.js .testresults default coverage xunit"
   },
   "keywords": [
     "functional",
     "iteration",
     "map",
     "reduce",
-    "monads"
+    "monads",
+    "lazy",
+    "asynchronous"
   ],
   "author": "Chris Grimes",
   "license": "ISC",
