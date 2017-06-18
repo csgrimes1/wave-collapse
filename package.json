@@ -4,7 +4,7 @@
   "description": "Efficient iteration over any object type.",
   "main": "index.js",
   "scripts": {
-    "lint": "$(npm bin)/eslint **/*.js",
+    "lint": "$(npm bin)/eslint index.js **/*.js",
     "newtest": "toolbin/newtest.sh",
     "plato": "$(npm bin)/plato -e $(pwd)/.eslintrc.json -r -n -d ./.plato **/*.js",
     "test": "$(npm bin)/chi-run test *.test.js .testresults default coverage xunit"
