@@ -51,9 +51,10 @@ module.exports = {
             const asyncSpy = sinon.spy();
             const p = transformConsume(promises)
                 .awaitEach()
+                .map(x => console.log(x) || x + 1)  //eslint-disable-line
                 .collect()
                 .then(ar => {
-                    context.deepEqual(ar, data);
+                    context.deepEqual(ar, [2, 3, 4, 5]);
                 });
             context.ok(!asyncSpy.called);
             return p;
@@ -75,7 +76,7 @@ module.exports = {
                 });
         },
         'take': context => {
-            return transformConsume(generators.syncgen(10))
+            return transformConsume(generators.syncgen(100000000))
                 .take(5)
                 .collect()
                 .then(ar => {

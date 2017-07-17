@@ -5,16 +5,23 @@ const stop = {stop: true};
 const resumer = require('./resumer');
 
 function transformOver (cardinalityMapper) {
-    return function *(atom, index) {
-        const expansion = cardinalityMapper(atom, index);
-        //expect an iterable or iterator
-        for (const item of expansion) {   //eslint-disable-line
-            if (item === stop) {
-                return;
+    const result = {
+        callback: function *(atom, index) {
+            const expansion = cardinalityMapper(atom, index);
+            //expect an iterable or iterator
+            for (const item of expansion) {   //eslint-disable-line
+                    console.log(require('util').inspect(item)) //eslint-disable-line
+                if (item === stop) {
+                    result.done = true;
+                    return;
+                }
+                yield item;
             }
-            yield item;
-        }
+        },
+        done: false
     };
+
+    return result;
 }
 
 function makeMap (mapper) {
@@ -43,7 +50,15 @@ function makeTakeWhile (predicate) {
 }
 
 function makeTaker (maxCount) {
-    return makeTakeWhile((_, index) => index < maxCount);
+    return (item, index) => {
+        //We want to prevent the next round if we know this is the end of what we requested.
+        if (index === maxCount - 1) {
+            return [item, stop];
+        } else if (index < maxCount) {
+            return [item];
+        }
+        return [stop];
+    };
 }
 
 function reduce (iterator, accumulator, initialValue) {
@@ -74,7 +89,10 @@ function createRecursive (target, transformer) {
     const walk0 = function *() {
         for (const item of target) {
             if (transformer) {
-                yield* transformer(item, returned);
+                yield* transformer.callback(item, returned);
+                if (transformer.done) {
+                    break;
+                }
             } else {
                 yield item;
             }
