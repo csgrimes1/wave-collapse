@@ -9,21 +9,25 @@ function fire () {
     const t1 = new Date().getTime();
     return new Promise(done => {
         setTimeout(() => {
-            const elapsed = new Date().getTime() - t1;
+            const endTime = new Date().getTime();
+            const elapsed = endTime - t1;
             console.log(`${elapsed} ms elapsed after setTimeout call.`);
-            done(Math.abs(elapsed - timeout));
+            done({startTime: t1, endTime, elapsed});
         }, timeout);
     });
 }
 
 function *fireAll () {
-    for (let n = 0; n < rounds; n++) {
+    for (let n = 0; n < 10000000; n++) {
+        console.log(`Round #${n + 1}`);
         yield fire();
     }
 }
 
 waveCollapse.createIterator(fireAll())
     .awaitEach()
+    .map(summary => console.log(JSON.stringify(summary)) || Math.abs(summary.elapsed - timeout))
+    .take(rounds)
     .reduce((acc, cur) => acc + cur, 0)
     .then(sum => {
         console.log(`Average deviation: ${sum / rounds} ms`);
