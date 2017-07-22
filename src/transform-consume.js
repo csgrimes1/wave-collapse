@@ -4,21 +4,23 @@ const consume = require('./consume');
 const stop = {stop: true};
 const resumer = require('./resumer');
 
-function transformOver (cardinalityMapper) {
+function transformOver (cardinalityMapper, name) {
     const result = {
         callback: function *(atom, index) {
             const expansion = cardinalityMapper(atom, index);
+
             //expect an iterable or iterator
             for (const item of expansion) {   //eslint-disable-line
-                    console.log(require('util').inspect(item)) //eslint-disable-line
                 if (item === stop) {
                     result.done = true;
                     return;
                 }
+                console.log('expansion item:', require('util').inspect(item), item instanceof resumer.Resumer);//eslint-disable-line
                 yield item;
             }
         },
-        done: false
+        done: false,
+        name
     };
 
     return result;
@@ -86,14 +88,30 @@ function collect (iterator, callback = () => true) {
 
 function createRecursive (target, transformer) {
     let returned = 0;
-    const walk0 = function *() {
+    const walk0 = function *() {    //eslint-disable-line
         for (const item of target) {
+                //console.log(item, transformer)//eslint-disable-line
             if (transformer) {
-                yield* transformer.callback(item, returned);
+                //If the current item is promisey, then make its offspring
+                //promisey as well.
+                // const metaTransform = (item instanceof resumer.Resumer)
+                //     ? (xResults) => item.push(xResults)
+                //     : (xResults) => xResults;
+                        //console.log('* transforming', JSON.stringify(transformer), item, metaTransform.toString())//eslint-disable-line
+                if (item instanceof resumer.Resumer) {
+                    //yield* item.push(transformer.callback(item, returned));
+                    for (const xresult of transformer.callback(item, returned)) {
+                            console.log('xresult:', xresult, xresult instanceof resumer.Resumer);//eslint-disable-line
+                        yield item.push(xresult);
+                    }
+                } else {
+                    yield* transformer.callback(item, returned);
+                }
                 if (transformer.done) {
                     break;
                 }
             } else {
+                        console.log('* first iteration', item)//eslint-disable-line
                 yield item;
             }
         }
@@ -105,9 +123,9 @@ function createRecursive (target, transformer) {
         }
     };
     const iterator = Object.assign(walk(), {
-        map: (mapper) => createRecursive(iterator, transformOver(makeMap(mapper))),
+        map: (mapper) => createRecursive(iterator, transformOver(makeMap(mapper), 'map')),
         filter: (predicate) => createRecursive(iterator, transformOver(makeFilter(predicate))),
-        awaitEach: () => createRecursive(iterator, transformOver(makeAwaiter())),
+        awaitEach: () => createRecursive(iterator, transformOver(makeAwaiter(), 'awaitEach')),
         skip: (count) => createRecursive(iterator, transformOver(makeSkipper(count))),
         skipWhile: (predicate) => createRecursive(iterator, transformOver(makeSkipWhile(predicate))),
         take: (count) => createRecursive(iterator, transformOver(makeTaker(count))),
