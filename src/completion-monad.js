@@ -44,9 +44,10 @@ class CompletionMonad {
     }
 
     then(callback) {
-        if (this.status === rejected)
-            return this;
-        else {
+        if (this.status === rejected) {
+            // throw this.error;
+            return CompletionMonad.reject(this.error);
+        } else {
             try {
                 return CompletionMonad.resolve(callback(this.value));
             } catch (x) {
@@ -57,7 +58,7 @@ class CompletionMonad {
 
     ['catch'](callback) {
         if (this.status === fulfilled)
-            return this;
+            return CompletionMonad.resolve(this.value);
         else {
             try {
                 return CompletionMonad.resolve(callback(this.error));
@@ -92,7 +93,7 @@ function smartConstruction (callback) {
         deferred.reject(x);
     };
 
-    //If resolve or rect are called synchronously...
+    //If resolve or reject are called synchronously...
     callback(resolve, reject);
     //...we'll know this after callback returns.
     switch (whatWasCalled) {
@@ -113,5 +114,7 @@ module.exports = {
     reject: (err) => CompletionMonad.reject(err),
     attempt: (callback) => CompletionMonad.attempt(callback),
     smartConstruction,
-    classType: CompletionMonad
+    classType: CompletionMonad,
+    isFullfilled: p => p.status === fulfilled,
+    isRejected: p => p.status === rejected
 };

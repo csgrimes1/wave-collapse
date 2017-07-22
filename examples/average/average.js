@@ -19,7 +19,6 @@ function fire () {
 
 function *fireAll () {
     for (let n = 0; n < 10000000; n++) {
-        console.log(`Round #${n + 1}`);
         yield fire();
     }
 }

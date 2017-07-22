@@ -29,12 +29,15 @@ module.exports = {
             const spy = sinon.spy(),
                 val = new Error('what');
 
-            syncPromise.reject(val)
+            const p = syncPromise.reject(val)
                 .catch(result => {
                     spy();
                     context.equal(result, val, 'should result in passed value');
                 });
             context.ok(spy.called, 'catch spy was called');
+            //Because p points to a catch, it is fulfilled.
+            context.ok(syncPromise.isFullfilled(p));
+            context.ok(!syncPromise.isRejected(p));
         },
         'reject with error in callback runs synchronously': context => {
             const catch1spy = sinon.spy(),
@@ -218,6 +221,37 @@ module.exports = {
             return syncPromise.resolve(spToValue)
                 .then(result => {
                     context.equal(result, testValue);
+                });
+        },
+        'an async promise is not fulfilled or rejected upon creation': context => {
+            context.ok(!syncPromise.isFullfilled(Promise.resolve()));
+            context.ok(!syncPromise.isRejected(Promise.resolve()));
+        },
+        'a sync promise is either fulfilled or rejected upon creation': context => {
+            context.ok(syncPromise.isFullfilled(syncPromise.resolve()));
+            context.ok(syncPromise.isRejected(syncPromise.reject()));
+        },
+        'sync promise should work with Promise.all': context => {
+            const promises = [syncPromise.resolve(1), syncPromise.resolve(10)];
+            return Promise.all(promises)
+                .then(results => {
+                    context.deepEqual(results, [1, 10]);
+                });
+        },
+        'skip!sync promise reject should work with Promise.all': context => {
+            const promises = [syncPromise.resolve(1), syncPromise.reject()];
+            const thenSpy = sinon.spy();
+            const catchSpy = sinon.spy();
+            return Promise.all(promises)
+                .then(() => {
+                    thenSpy();
+                })
+                .catch(() => {
+                    catchSpy();
+                })
+                .then(() => {
+                    context.ok(!thenSpy.called, 'then spy called');
+                    context.ok(catchSpy.called, 'catch spy called');
                 });
         }
     }
