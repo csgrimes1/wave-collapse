@@ -19,7 +19,7 @@ map/reduce paradigm to make iteration asynchronous.
 
 Cool. Lazy, asynchronous (or synchronous) iteration. Yawn (lazy yawn).
 
-In addition to supporting lazy iteration, I wanted the library to be able to iterate over
+In addition to supporting lazy iteration, I wanted the library to be able to iterateOver over
 unions. Scala has list comprehension support allowing you to permute lists together in a
 union, and at each level of combination, you can filter. The syntax is a little rough
 on the eyes. This library supports the equivalent functionality in a simple, fluent

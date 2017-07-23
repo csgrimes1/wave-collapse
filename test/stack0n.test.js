@@ -20,7 +20,7 @@ module.exports = {
         'simple stacking': (context) => {
             const val = 2112;
             const series = createSeries(3);
-            const results = Array.from(stack0n.transform(val, series));
+            const results = Array.from(stack0n.transform(val, 0, series));
             context.deepEqual(results.map(r => r.value), [2112, 2113, 2114]);
         },
 
@@ -28,7 +28,7 @@ module.exports = {
             const thenSpy = sinon.spy();
             const val = 2112;
             const series = createSeries(3);
-            const results = Array.from(stack0n.transform(val, series, true));
+            const results = Array.from(stack0n.transform(val, 1, series, true));
             const p = Promise.all(results)
                 .then(outputs => {
                     thenSpy();
