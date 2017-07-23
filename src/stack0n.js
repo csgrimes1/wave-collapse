@@ -11,10 +11,10 @@ function *transformZeroN (valMonad, index, transformer, monadResolver) {
 module.exports = {
     //value: any; zeroNTTransform: iterable creating 0..n results from value monad.
     //Returns an iterable of completion monads.
-     transform: (value, index, zeroNTransform, synchronous = true) => {
-        const resolver = synchronous
-            ? (atom) => completionMonad.resolve(atom)
-            : (atom) => Promise.resolve(atom).then(result => completionMonad.resolve(result));
+     transform: (value, index, zeroNTransform, asynchronous = false) => {
+        const resolver = asynchronous
+            ? (atom) => Promise.resolve(atom).then(result => completionMonad.resolve(result))
+            : (atom) => completionMonad.resolve(atom);
         return transformZeroN(completionMonad.resolve(value), index, zeroNTransform, resolver);
     }
 };
