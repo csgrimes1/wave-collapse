@@ -13,7 +13,7 @@ function ignoreSome (predicate) {
         return [
             //Illustrates how we must always yield at least one outcome from every atom due to the
             //need to wait. We can use a well-known value to tell the visitor to ignore the yield
-            //when we need to filter the value out.
+            //when we need later to filter the value out.
             atomicValueMonad.then((val) => {
                 return predicate(val, index) ? val : ignoreMarker
             })
@@ -29,10 +29,20 @@ const transforms = {
     mapTransform,
     ignoreSome
 };
+const asyncTransforms = {
+    mapTransform: Object.assign(mapTransform.bind(null), {asynchronous: true}),
+    ignoreSome
+};
+const superAsyncTransforms = {
+    mapTransform: Object.assign(mapTransform.bind(null), {asynchronous: true}),
+    ignoreSome: Object.assign(ignoreSome.bind(null), {asynchronous: true})
+};
 const terminators = {
     simpleTerm
 };
-const api = lazyApiBuilder(transforms, terminators);//eslint-disable-line
+const lazySync = lazyApiBuilder(transforms, terminators);
+const lazyAsync = lazyApiBuilder(asyncTransforms, terminators);
+const lazyAsync2 = lazyApiBuilder(superAsyncTransforms, terminators);
 
 module.exports = {
     beforeTest: t => {
@@ -41,8 +51,9 @@ module.exports = {
 
     tests: {
         'sync API': (context) => {
-            const ar = Array.from(api.iterateOver([1, 2, 3])
+            const ar = Array.from(lazySync.iterateOver([1, 2, 3])
                 .mapTransform((value, index) => ({index, value})));
+            console.log(require('util').inspect(ar))//eslint-disable-line
             const results = ar.map(monad => monad.value);
             context.deepEqual(results, [{index: 0, value: 1}, {index: 1, value: 2}, {index: 2, value: 3}]);
         },
@@ -50,12 +61,38 @@ module.exports = {
         'ignoring yield semantics': (context) => {
             const predicate = val => (val % 2) === 0;
             const mapping = (val, index) => index;
-            const operation = api.iterateOver([null, null, null])
+            const operation = lazySync.iterateOver([null, null, null])
                 .mapTransform(mapping)
                 .ignoreSome(predicate);
             const ar = Array.from(operation);
             const results = ar.map(monad => monad.value);
             context.deepEqual(results, [0, ignoreMarker, 2]);
+        },
+        'async stacking 1 deep': (context) => {
+            const predicate = val => (val % 2) === 0;
+            const mapping = (val, index) => index;
+            const operation = lazyAsync.iterateOver([null, null, null])
+                .mapTransform(mapping)
+                .ignoreSome(predicate);
+            const promises = Array.from(operation);
+            context.ok(promises[0] instanceof Promise, 'should yield promises');
+            return Promise.all(promises)
+                .then(ar => {
+                    context.deepEqual(ar, [0, ignoreMarker, 2]);
+                });
+        },
+        'async stacking 2 deep': (context) => {
+            const predicate = val => (val % 2) === 0;
+            const mapping = (val, index) => index;
+            const operation = lazyAsync2.iterateOver([null, null, null])
+                .mapTransform(mapping)
+                .ignoreSome(predicate);
+            const promises = Array.from(operation);
+            context.ok(promises[0] instanceof Promise, 'should yield promises');
+            return Promise.all(promises)
+                .then(ar => {
+                    context.deepEqual(ar, [0, ignoreMarker, 2]);
+                });
         }
     }
 };

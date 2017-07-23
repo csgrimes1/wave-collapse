@@ -2,6 +2,7 @@
 
 const stack0n = require('../src/stack0n');
 const sinon = require('sinon');
+const completionMonad = require('../src/completion-monad');
 
 function createSeries (length) {
     return function *(atomicValueMonad) {
@@ -21,6 +22,7 @@ module.exports = {
             const val = 2112;
             const series = createSeries(3);
             const results = Array.from(stack0n.transform(val, 0, series));
+            context.ok(results[0] instanceof completionMonad.classType, 'should yield sync monad');
             context.deepEqual(results.map(r => r.value), [2112, 2113, 2114]);
         },
 
@@ -34,6 +36,7 @@ module.exports = {
                     thenSpy();
                     context.deepEqual(outputs, [2112, 2113, 2114]);
                 });
+            context.ok(results[0] instanceof Promise, 'should yield promise');
             context.ok(!thenSpy.called);
             return p;
         }

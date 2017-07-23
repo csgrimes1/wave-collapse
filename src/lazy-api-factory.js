@@ -22,7 +22,7 @@ function bind (iterable, transformBuilders, terminators) {
             //Add a method accepting 0..n arguments, returning a bind over a transformer.
             const method = function () {
                 const xf0n = xBuilder.apply(null, Array.from(arguments));
-                return bind(sto(iterable, xf0n, xBuilder.synchronous), transformBuilders, terminators);
+                return bind(sto(iterable, xf0n, xBuilder.asynchronous), transformBuilders, terminators);
             };
             return {[funcName]: method};
         });
