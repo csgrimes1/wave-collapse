@@ -69,7 +69,7 @@ module.exports = {
                     context.deepEqual(results, [0, 1, instructions.STOP, instructions.STOP]);
                 });
         },
-        'flatMap transform': context => {
+        'flatMap transform': (context) => {
             const func = standardTransforms.flatMap();
             const promises = func([])
                 .concat(func(['a', 'b']))

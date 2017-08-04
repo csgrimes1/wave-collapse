@@ -2,17 +2,17 @@
 
 const completionMonad = require('./completion-monad');
 
-function *transformZeroN (valMonad, index, transformer, monadResolver) {
+function *transformZeroN (valMonad, index, transformer) {
+    const resolver = (atom) => completionMonad.resolve(atom);
     for (const atom of transformer(valMonad, index)) {
-        yield monadResolver(atom);
+        yield resolver(atom);
     }
 }
 
 module.exports = {
     //value: any; zeroNTTransform: iterable creating 0..n results from value monad.
     //Returns an iterable of completion monads.
-     transform: (value, index, zeroNTransform) => {
-        const resolver = (atom) => completionMonad.resolve(atom);
-        return transformZeroN(completionMonad.resolve(value), index, zeroNTransform, resolver);
+    transform: (value, index, zeroNTransform) => {
+        return transformZeroN(completionMonad.resolve(value), index, zeroNTransform);
     }
 };

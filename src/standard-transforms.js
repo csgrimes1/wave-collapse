@@ -43,5 +43,7 @@ module.exports = {
             })
         ]
     },
-    flatMap: () => collection => Array.from(collection)
+    flatMap: () => {
+        return collection => collection;
+    }
 };
