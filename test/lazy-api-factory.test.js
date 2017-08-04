@@ -29,20 +29,11 @@ const transforms = {
     mapTransform,
     ignoreSome
 };
-const asyncTransforms = {
-    mapTransform: Object.assign(mapTransform.bind(null), {asynchronous: true}),
-    ignoreSome
-};
-const superAsyncTransforms = {
-    mapTransform: Object.assign(mapTransform.bind(null), {asynchronous: true}),
-    ignoreSome: Object.assign(ignoreSome.bind(null), {asynchronous: true})
-};
+
 const terminators = {
     simpleTerm
 };
 const lazySync = lazyApiBuilder(transforms, terminators);
-const lazyAsync = lazyApiBuilder(asyncTransforms, terminators);
-const lazyAsync2 = lazyApiBuilder(superAsyncTransforms, terminators);
 
 module.exports = {
     beforeTest: t => {
@@ -68,23 +59,10 @@ module.exports = {
             const results = ar.map(monad => monad.value);
             context.deepEqual(results, [0, ignoreMarker, 2]);
         },
-        'async stacking 1 deep': (context) => {
+        'async stacking deep': (context) => {
             const predicate = val => (val % 2) === 0;
-            const mapping = (val, index) => index;
-            const operation = lazyAsync.iterateOver([null, null, null])
-                .mapTransform(mapping)
-                .ignoreSome(predicate);
-            const promises = Array.from(operation);
-            context.ok(promises[0] instanceof Promise, 'should yield promises');
-            return Promise.all(promises)
-                .then(ar => {
-                    context.deepEqual(ar, [0, ignoreMarker, 2]);
-                });
-        },
-        'async stacking 2 deep': (context) => {
-            const predicate = val => (val % 2) === 0;
-            const mapping = (val, index) => index;
-            const operation = lazyAsync2.iterateOver([null, null, null])
+            const mapping = (val, index) => Promise.resolve(index);
+            const operation = lazySync.iterateOver([null, null, null])
                 .mapTransform(mapping)
                 .ignoreSome(predicate);
             const promises = Array.from(operation);

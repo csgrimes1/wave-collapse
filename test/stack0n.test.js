@@ -28,9 +28,9 @@ module.exports = {
 
         'async stacking': (context) => {
             const thenSpy = sinon.spy();
-            const val = 2112;
+            const val = Promise.resolve(2112);
             const series = createSeries(3);
-            const results = Array.from(stack0n.transform(val, 1, series, true));
+            const results = Array.from(stack0n.transform(val, 1, series));
             const p = Promise.all(results)
                 .then(outputs => {
                     thenSpy();
