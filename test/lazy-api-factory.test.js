@@ -21,19 +21,11 @@ function ignoreSome (predicate) {
     }
 }
 
-function simpleTerm(iterator) {
-    return Array.from(iterator);
-}
-
 const transforms = {
     mapTransform,
     ignoreSome
 };
-
-const terminators = {
-    simpleTerm
-};
-const lazySync = lazyApiBuilder(transforms, terminators);
+const lazySync = lazyApiBuilder(transforms);
 
 module.exports = {
     beforeTest: t => {
@@ -41,10 +33,14 @@ module.exports = {
     },
 
     tests: {
+        'shallow iteration': (context) => {
+            const ar = Array.from(lazySync.iterateOver([1, 2, 3]));
+            const results = ar.map(monad => monad.value);
+            context.deepEqual(results, [1, 2, 3]);
+        },
         'sync API': (context) => {
             const ar = Array.from(lazySync.iterateOver([1, 2, 3])
                 .mapTransform((value, index) => ({index, value})));
-            console.log(require('util').inspect(ar))//eslint-disable-line
             const results = ar.map(monad => monad.value);
             context.deepEqual(results, [{index: 0, value: 1}, {index: 1, value: 2}, {index: 2, value: 3}]);
         },
@@ -70,6 +66,16 @@ module.exports = {
             return Promise.all(promises)
                 .then(ar => {
                     context.deepEqual(ar, [0, ignoreMarker, 2]);
+                });
+        },
+        'deep reduce': (context) => {
+            return lazySync.iterateOver([1, 2, 3])
+                .mapTransform((value, index) => ({index, value}))
+                .reduce((acc, value) => {
+                    return acc + value.index + value.value;
+                }, 1000)
+                .then(result => {
+                    context.equal(result, 1009);
                 });
         }
     }

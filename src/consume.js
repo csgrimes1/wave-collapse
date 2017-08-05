@@ -1,34 +1,59 @@
 'use strict';
 
-const resumer = require('./resumer'),
-    completionMonad = require('./completion-monad');
+const completionMonad = require('./completion-monad'),
+    instructions = require('./instructions');
 
-const logga = console.log;//eslint-disable-line
 module.exports = function consume (iterator, callback) {
     return completionMonad.smartConstruction((resolve, reject) => {
         let count = 0;
+
+        function isStop (value) {
+            if (value === instructions.STOP) {
+                resolve(count);
+                return true;
+            }
+        }
+        function doCallbackAction (value) {
+            if (value === instructions.SKIP) {
+                //Keep looping
+                return true;
+            }
+            if (callback(value, count)) {
+                count++;
+                return true;
+            }
+            //No more loopie
+            return false;
+        }
+        function resumeAsync(promise, iterator, callback) {
+            promise.then(value => {
+                if (isStop(value)) {
+                    //loop is broken
+                    return;
+                }
+                if (doCallbackAction(value)) {
+                    process.nextTick(rawConsume, iterator, callback);
+                } else {
+                    resolve(count);
+                }
+            })
+                .catch(x => {
+                    reject(x);
+                });
+        }
         function rawConsume (iterator, callback) {  //eslint-disable-line
             try {
                 for (let current = iterator.next(); !current.done; current = iterator.next()) {
-                    if (current.value instanceof resumer.Resumer) {
-                        current.value.resume((value) => {   //eslint-disable-line no-loop-func
-                            logga('==========> consumer loop', require('util').inspect(current), '==>', value);   //eslint-disable-line
-                            if (callback(value, count)) {
-                                count++;
-                                process.nextTick(rawConsume, iterator, callback);
-                            } else {
-                                resolve(count);
-                            }
-                        })
-                            .catch(x => {
-                                reject(x);
-                            });
+                    const cmonad = current.value;
+                    if (cmonad.synchronous || cmonad.fulfilled) {
+                        if (!doCallbackAction(cmonad.value)) {
+                            resolve(count);
+                            return;
+                        }
+                    } else {
+                        resumeAsync(cmonad, iterator, callback);
                         return;
                     }
-                    if (!callback(current.value, count)) {
-                        break;
-                    }
-                    count++;
                 }
                 resolve(count);
             } catch (x) {
@@ -37,4 +62,4 @@ module.exports = function consume (iterator, callback) {
         }
         rawConsume(iterator, callback);
     });
-}
+};
