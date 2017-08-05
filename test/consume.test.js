@@ -3,6 +3,7 @@
 const consume = require('../src/consume');
 const generators = require('./generators');
 const sinon = require('sinon');
+const completionMonad = require('../src/completion-monad');
 
 module.exports = {
     beforeTest: t => {
@@ -12,7 +13,7 @@ module.exports = {
     tests: {
         'should consume a synchronous iterator': context => {
             const count = 5;
-            return consume(generators.syncgen(count), () => true)
+            return consume(generators.syncgen(count, thing => completionMonad.resolve(thing)), () => true)
                 .then(finalCount => {
                     context.equal(finalCount, count);
                 });
@@ -27,7 +28,7 @@ module.exports = {
         'should stop a synchronous iterator': context => {
             const count = 5,
                 stopVal = 3;
-            return consume(generators.syncgen(count), (val) => val < stopVal)
+            return consume(generators.syncgen(count, thing => completionMonad.resolve(thing)), (val) => val < stopVal)
                 .then(finalCount => {
                     context.equal(finalCount, stopVal);
                 });
@@ -43,7 +44,7 @@ module.exports = {
         'should reject on a callback exception': context => {
             const e = new Error('bad');
             const catchSpy = sinon.spy();
-            return consume(generators.syncgen(10000), () => {
+            return consume(generators.syncgen(10000, thing => completionMonad.resolve(thing)), () => {
                 throw e;
             })
                 .catch(x => {
