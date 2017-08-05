@@ -2,6 +2,7 @@
 
 const standardTransforms = require('../src/standard-transforms');
 const instructions = require('../src/instructions');
+const completionMonad = require('../src/completion-monad');
 
 module.exports = {
     beforeTest: t => {
@@ -71,13 +72,13 @@ module.exports = {
         },
         'flatMap transform': (context) => {
             const func = standardTransforms.flatMap();
-            const promises = func([])
-                .concat(func(['a', 'b']))
-                .concat(func(['c']))
-                .concat(func(['d', 'e', ['f', 'h']]));
+            const promises = Array.from(func(completionMonad.resolve([])))
+                .concat(Array.from(func(completionMonad.resolve(['a', 'b']))))
+                .concat(Array.from(func(completionMonad.resolve(['c']))))
+                .concat(Array.from(func(completionMonad.resolve(['d', 'e', ['f', 'h']]))));
             return Promise.all(promises)
                 .then(results => {
-                    context.deepEqual(results, ['a', 'b', 'c', 'd', 'e', ['f', 'h']]);
+                    context.deepEqual(results, [instructions.SKIP, 'a', 'b', 'c', 'd', 'e', ['f', 'h']]);
                 });
         }
     }
