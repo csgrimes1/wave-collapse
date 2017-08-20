@@ -41,6 +41,12 @@ module.exports = {
                     context.equal(finalCount, stopVal);
                 });
         },
+        'should handle a zero length iterator': context => {
+            return consume(generators.asyncgen(0), () => true)
+                .then(finalCount => {
+                    context.equal(finalCount, 0);
+                });
+        },
         'should reject on a callback exception': context => {
             const e = new Error('bad');
             const catchSpy = sinon.spy();

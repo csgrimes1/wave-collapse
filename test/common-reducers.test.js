@@ -33,6 +33,14 @@ module.exports = {
                 .then(result => {
                     context.deepEqual(result, ar);
                 });
+        },
+        'zero length toArray operation': context => {
+            const ar = [];
+            return api.iterateOver(ar)
+                .reduce(index.reducers.toArray)
+                .then(result => {
+                    context.deepEqual(result, ar);
+                });
         }
     }
 };

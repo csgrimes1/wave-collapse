@@ -73,7 +73,7 @@ module.exports = {
             })
         ]
     },
-    flatMap: () => {
+    flatten: () => {
         //Iterable of completion monads
         return (monadOfCollection) => {
             return asyncIterable(monadOfCollection);
