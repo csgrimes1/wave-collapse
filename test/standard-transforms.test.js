@@ -70,8 +70,8 @@ module.exports = {
                     context.deepEqual(results, [0, 1, instructions.STOP, instructions.STOP]);
                 });
         },
-        'flatMap transform': (context) => {
-            const func = standardTransforms.flatMap();
+        'flatten transform': (context) => {
+            const func = standardTransforms.flatten();
             const promises = Array.from(func(completionMonad.resolve([])))
                 .concat(Array.from(func(completionMonad.resolve(['a', 'b']))))
                 .concat(Array.from(func(completionMonad.resolve(['c']))))

@@ -68,6 +68,12 @@ module.exports = {
                     context.deepEqual(ar, [0, ignoreMarker, 2]);
                 });
         },
+        'zero length async': (context) => {
+            const operation = lazySync.iterateOver([])
+                mapTransform(x => x);
+            const ar = Array.from(operation);
+            context.equal(ar.length, 0);
+        },
         'deep reduce': (context) => {
             return lazySync.iterateOver([1, 2, 3])
                 .mapTransform((value, index) => ({index, value}))

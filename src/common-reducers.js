@@ -14,9 +14,12 @@ const average = Object.assign(
     }
 );
 
-function toArray (accum, currentValue) {
-    return (accum || []).concat([currentValue]);
-}
+const toArray = Object.assign((accum, currentValue) => {
+        return (accum || []).concat([currentValue]);
+    },
+    {
+        postAccum: (result) => result || []
+    });
 
 module.exports = {
     sum,

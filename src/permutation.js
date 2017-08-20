@@ -1,33 +1,31 @@
 'use strict';
 
-const transformConsume = require('./transform-consume');
+const lazyApiFactory = require('./lazy-api-factory');
+const standardTransforms = require('./standard-transforms');
+const defaultLazyApi = lazyApiFactory(standardTransforms);
 
-function *permuteWith (stack, iterad) {
-    for (const item of iterad) {
-        yield stack.concat([item]);
-    }
-}
-
-module.exports = function startPermutation (iterad) {
-    function build (previous, next) {
-        const rawVisit = function *() {
-            for (const stack of previous) {
-                yield* permuteWith(stack, next);
-            }
-        };
-
+module.exports = function startPermutation (iterad, lazyApi = defaultLazyApi) {
+    function build (previous, current) {
+        function explode (item) {
+            return lazyApi.iterateOver(previous).map(stack => {
+                const result = stack.concat([item]);
+                console.log('stack + [item] =========>', result);//eslint-disable-line
+                return result;
+            });
+        }
         const result = {
-            visit: () => transformConsume(rawVisit()),
+            iterateOver: () => lazyApi.iterateOver(current)
+                .map(explode)
+                .flatten(),
             with: function (other) {
-                return build(this.visit(), other);
+                return build(result.iterateOver(), other);
             },
             filter: function (predicate) {
-                const selfie = this;
                 const spreadicate = function (ar) {
-                    return predicate.apply(selfie, ar);
+                    return predicate.apply(result, ar);
                 };
                 return Object.assign({}, this, {
-                    visit: () => selfie.visit().filter(spreadicate)
+                    iterateOver: () => result.iterateOver().filter(spreadicate)
                 })
             }
         };
