@@ -4,10 +4,7 @@ Run setTimeout numerous times and average out the delta of the actual vs request
 If you request a timeout of 10 milliseconds and fire repeatedly, how close to 10 milliseconds
 does the timeout fire on average?
 
-#### Hint
-
-Comment out the line containing `.awaitEach` and see the difference in behavior. It will
-be especially evident on a long timeout. Sample command line:
+#### To run:
 
 ```bash
 #1000 milliseconds, 5 rounds

@@ -3,6 +3,7 @@
 const generators = require('./generators');
 const completionMonad = require('../src/completion-monad');
 const reduce = require('../src/reduce');
+const sinon = require('sinon');
 
 module.exports = {
     beforeTest: t => {
@@ -31,6 +32,17 @@ module.exports = {
                 .then(result => {
                     context.deepEqual(result, [0, 1, 2, 3, 4, 5]);
                 });
+        },
+        'bad callback parameter should cause exception': (context) => {
+            const errSpy = sinon.spy();
+            try {
+                const count = 6;
+                const iterable = generators.asyncgen(count, thing => completionMonad.resolve(thing));
+                return reduce(iterable, 'not a function');
+            } catch (x) {
+                errSpy();
+            }
+            context.ok(errSpy.called);
         }
     }
 };

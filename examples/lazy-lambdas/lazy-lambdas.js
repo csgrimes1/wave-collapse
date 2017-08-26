@@ -1,6 +1,6 @@
 'use strict';
 
-const waveCollapse = require('../../index');
+const waveCollapse = require('../../index').makeLazyApi();
 const args = process.argv.slice(2);
 const timeout = args[0] || 1000;
 
@@ -17,9 +17,8 @@ const fire = () => {
 
 const rounds = [fire, fire, fire, fire, fire];
 
-waveCollapse.createIterator(rounds)
+waveCollapse.iterateOver(rounds)
     .map(lambda => lambda())
-    .awaitEach()
     .reduce((acc, cur) => acc + cur, 0)
     .then(sum => {
         console.log(`Average deviation: ${sum / rounds.length} ms`);  //eslint-ignore-line

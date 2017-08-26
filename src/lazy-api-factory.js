@@ -15,6 +15,11 @@ function toIterable (iterable, obj) {   //eslint-disable-line
 }
 
 function bind (iterable, transformBuilders) {
+    const myType = 'lazyiterable';
+    if (iterable && iterable.type === myType) {
+        return iterable;
+    }
+
     const txNames = Object.getOwnPropertyNames(transformBuilders);
     const x2 = txNames
         .map(funcName => {
@@ -31,6 +36,7 @@ function bind (iterable, transformBuilders) {
         reduce: curry(iterable, reduce)
     };
     const info = {
+        type: myType,
         toString: () => `LazyIterable; transforms=${txNames}`
     };
     return toIterable(iterable, Object.assign(info, x3, reduction));

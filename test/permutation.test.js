@@ -11,24 +11,24 @@ module.exports = {
     },
 
     tests: {
-        'skip!typical permutation': context => {
+        'typical permutation': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [true, false];
             const p = permutation(ar1)
                 .with(ar2)
                 .with(ar3);
-            return p.iterateOver()
+            return p
                 .reduce(commonReducers.toArray)
                 .then(result => {
                     context.equal(ar1.length * ar2.length * ar3.length, result.length);
                 });
         },
-        'skip!zeroed permutation': context => {
+        'zeroed permutation': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [];
             const p = permutation(ar1)
                 .with(ar2)
                 .with(ar3);
-            return p.iterateOver()
-                .reduce(commonReducers.toArray())
+            return p
+                .reduce(commonReducers.toArray)
                 .then(result => {
                     context.equal(0, result.length);
                 });
@@ -36,22 +36,28 @@ module.exports = {
         'singular permutation': context => {
             const ar1 = [1, 2];
             const p = permutation(ar1);
-            return p.iterateOver()
+            return p
                 .reduce(commonReducers.toArray)
                 .then(result => {
                     context.deepEqual(result, [[1], [2]]);
                 });
         },
-        'skip!filter on permutation': context => {
+        'filter on permutation': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [true, false],
                 p = permutation(ar1)
                     .with(ar2)
                     .filter((num, char) => char === 'b')
                     .with(ar3);
-            return p.iterateOver()
-                .reduce(commonReducers.toArray())
+            return p
+                .reduce(commonReducers.toArray)
                 .then(results => {
                     context.equal(results.length, 4);
+                    context.deepEqual(results, [
+                        [1, 'b', true],
+                        [1, 'b', false],
+                        [2, 'b', true],
+                        [2, 'b', false]
+                    ]);
                 });
         }
     }

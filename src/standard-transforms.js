@@ -12,9 +12,14 @@ function asyncIterator(monadOfCollection) {
             if (tail && tail.length <= 0) {
                 return {done: true};
             }
-            const p = monadOfCollection.then(items => {
+            const p = monadOfCollection.then(items => { //eslint-disable-line
+                if (observeInstructions(items)) {
+                    tail = [];
+                    return items;
+                }
                 if (!tail) {
-                    tail = Array.from(items).map(item => completionMonad.resolve(item));
+                    tail = Array.from(items)
+                        .map(item => completionMonad.resolve(item));
                 }
                 if (tail.length <= 0) {
                     return SKIP;
@@ -34,13 +39,29 @@ function asyncIterable(monadOfCollection) {
     };
 }
 
+function observeInstructions(val) {
+    if (val === SKIP || val === STOP) {
+        return true;
+    }
+}
+
 module.exports = {
     map: (mapper) => {
-        return (atomicValueMonad, index) => [atomicValueMonad.then((val) => mapper(val, index))]
+        return (atomicValueMonad, index) => [
+            atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
+                return mapper(val, index);
+            })
+        ]
     },
     filter: (predicate) => {
         return (atomicValueMonad, index) => [
             atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
                 return predicate(val, index) ? val : SKIP;
             })
         ]
@@ -48,6 +69,9 @@ module.exports = {
     skip: (number) => {
         return (atomicValueMonad, index) => [
             atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
                 return index >= number ? val : SKIP;
             })
         ]
@@ -55,6 +79,9 @@ module.exports = {
     skipWhile: (predicate) => {
         return (atomicValueMonad, index) => [
             atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
                 return predicate(val, index) ? SKIP : val;
             })
         ]
@@ -62,6 +89,9 @@ module.exports = {
     take: (number) => {
         return (atomicValueMonad, index) => [
             atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
                 return index >= number ? STOP : val;
             })
         ]
@@ -69,6 +99,9 @@ module.exports = {
     takeWhile: (predicate) => {
         return (atomicValueMonad, index) => [
             atomicValueMonad.then((val) => {
+                if (observeInstructions(val)) {
+                    return val;
+                }
                 return predicate(val, index) ? val : STOP;
             })
         ]

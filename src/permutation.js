@@ -5,31 +5,30 @@ const standardTransforms = require('./standard-transforms');
 const defaultLazyApi = lazyApiFactory(standardTransforms);
 
 module.exports = function startPermutation (iterad, lazyApi = defaultLazyApi) {
-    function build (previous, current) {
-        function explode (item) {
-            return lazyApi.iterateOver(previous).map(stack => {
-                const result = stack.concat([item]);
-                console.log('stack + [item] =========>', result);//eslint-disable-line
-                return result;
-            });
-        }
+    function compose (previous, current) {
+        const currentReplayable = Array.from(lazyApi.iterateOver(current));
+        return lazyApi.iterateOver(previous).map(stack =>
+            lazyApi.iterateOver(currentReplayable).map(item =>
+                stack.concat([item]))
+        )
+            .flatten();
+
+    }
+    function build (composer) {
+        const composition = composer();
         const result = {
-            iterateOver: () => lazyApi.iterateOver(current)
-                .map(explode)
-                .flatten(),
             with: function (other) {
-                return build(result.iterateOver(), other);
+                return build(() => compose(composition, other));
             },
             filter: function (predicate) {
                 const spreadicate = function (ar) {
-                    return predicate.apply(result, ar);
+                    return predicate.apply(null, ar);
                 };
-                return Object.assign({}, this, {
-                    iterateOver: () => result.iterateOver().filter(spreadicate)
-                })
+
+                return build(() => composition.filter(spreadicate));
             }
         };
-        return result;
+        return Object.assign({}, lazyApi.iterateOver(composition), result);
     }
-    return build([[]], iterad);
+    return build(() => compose([[]], iterad));
 };

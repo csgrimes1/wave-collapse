@@ -80,6 +80,23 @@ module.exports = {
                 .then(results => {
                     context.deepEqual(results, [instructions.SKIP, 'a', 'b', 'c', 'd', 'e', ['f', 'h']]);
                 });
+        },
+        'flatten observes instructions': (context) => {
+            const func = standardTransforms.flatten();
+            const promises = Array.from(
+                func(
+                    completionMonad.resolve([1, 2, instructions.SKIP, instructions.STOP])
+                )
+            )
+                .concat(Array.from(func(completionMonad.resolve(['a', 'b']))))
+                .concat(Array.from(func(completionMonad.resolve(instructions.STOP))))
+                .concat(Array.from(func(completionMonad.resolve(instructions.SKIP))));
+            return Promise.all(promises)
+                .then(result => {
+                    const SKIP = instructions.SKIP;
+                    const STOP = instructions.STOP;
+                    context.deepEqual(result, [1, 2, SKIP, STOP, 'a', 'b', STOP, SKIP]);
+                });
         }
     }
 };
