@@ -1,6 +1,6 @@
 'use strict';
 
-const waveCollapse = require('../../index');
+const waveCollapse = require('../../index').makeLazyApi();
 const args = process.argv.slice(2);
 const timeout = args[0] || 100;
 const rounds = args[1] || 100;
@@ -23,8 +23,7 @@ function *fireAll () {
     }
 }
 
-waveCollapse.createIterator(fireAll())
-    .awaitEach()
+waveCollapse.iterateOver(fireAll())
     .map(summary => console.log(JSON.stringify(summary)) || Math.abs(summary.elapsed - timeout))
     .take(rounds)
     .reduce((acc, cur) => acc + cur, 0)

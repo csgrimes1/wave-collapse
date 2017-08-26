@@ -83,6 +83,14 @@ module.exports = {
                 .then(result => {
                     context.equal(result, 1009);
                 });
+        },
+        're-entrance': (context) => {
+            const ar = [3, 4, 5];
+            const first = lazySync.iterateOver(ar);
+            const operation = lazySync.iterateOver(first);
+            const result = Array.from(operation);
+            context.equal(result.length, ar.length);
+            context.deepEqual(result.map(r => r.value), ar);
         }
     }
 };

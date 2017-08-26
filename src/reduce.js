@@ -6,6 +6,9 @@ const consume = require('./consume');
 //reduceCallback can have a property postAccum, matching the signature
 //   (accum, count) => alteredResult
 function reduce (lazyIterable, reduceCallback, startAccum) {
+    if (typeof reduceCallback !== 'function') {
+        throw new Error('The reduceCallback parameter must be a function.');
+    }
     let accumulation = startAccum;
     return consume(lazyIterable, (value, index) => {
         accumulation = reduceCallback(accumulation, value, index);

@@ -7,7 +7,3 @@ does the timeout fire on average?
 This example is based on the `average` example, but it is written to be completely
 immutable. It demonstrates how arrays can be lazy when they contain only lambdas. The
 lazy behavior is evident in the delay between each line of console output.
-
-#### Hint
-
-Comment out the line containing `.awaitEach` and see the difference in behavior.
