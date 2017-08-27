@@ -4,6 +4,7 @@ const generators = require('./generators');
 const completionMonad = require('../src/completion-monad');
 const reduce = require('../src/reduce');
 const sinon = require('sinon');
+const instructions = require('../src/instructions');
 
 module.exports = {
     beforeTest: t => {
@@ -43,6 +44,18 @@ module.exports = {
                 errSpy();
             }
             context.ok(errSpy.called);
+        },
+        'stopping reduce callback': (context) => {
+            const callSpy = sinon.spy();
+            const count = 8;
+            const iterable = generators.asyncgen(count, thing => completionMonad.resolve(thing));
+            return reduce(iterable, () => {
+                callSpy();
+                return instructions.STOP;
+            }, null)
+                .then(() => {
+                    context.equal(callSpy.callCount, 1);
+                });
         }
     }
 };

@@ -3,6 +3,7 @@
 const sto = require('./stack-transformation-over');
 const curry = require('./curry');
 const reduce = require('./reduce');
+const commonReducers = require('./common-reducers');
 
 function toIterable (iterable, obj) {   //eslint-disable-line
     return Object.assign({}, obj, {
@@ -33,7 +34,8 @@ function bind (iterable, transformBuilders) {
         });
     const x3 = Object.assign.apply(null, x2);
     const reduction = {
-        reduce: curry(iterable, reduce)
+        reduce: curry(iterable, reduce),
+        visit: (visitorCallback) => reduce(iterable, commonReducers.visit(visitorCallback))
     };
     const info = {
         type: myType,
