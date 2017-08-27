@@ -1,16 +1,16 @@
 'use strict';
 
-const waveCollapse = require('../../index');
-const lazyApi = waveCollapse.makeLazyApi();
-const reducers = waveCollapse.reducers;
+const waveCollapse = require('../../index').defaultApi;
 const assert = require('assert');
 
+console.log('wc:', waveCollapse);
+
 const towns = ['Hoopsville', 'Rip City', 'Bucketown', 'Rimcheck'];
-const teams = lazyApi.iterateOver(towns)
+const teams = waveCollapse.iterateOver(towns)
     .map((town, townIndex) => [1, 2, 3, 4, 5, 6]
         .map(teamNumber => Object.assign({town, townIndex, teamName: `${town} #${teamNumber}`})))
     .flatten()
-    .reduce(reducers.toArray)
+    .reduce(waveCollapse.toArray)
     .value;
 
 function distance (townIndex1, townIndex2) {
@@ -34,7 +34,7 @@ waveCollapse.permutation(teams)
         }
         return true;
     })
-    .reduce(reducers.toArray)
+    .reduce(waveCollapse.toArray)
     .then(matchups => {
         matchups.forEach(matchup => {
             console.log(`${matchup[0].teamName} vs. ${matchup[1].teamName}`);
