@@ -2,18 +2,18 @@
 
 /*eslint-disable one-var-declaration-per-line*/
 
-const permutation = require('../src/permutation'),
+const combination = require('../src/combination'),
     commonReducers = require('../src/common-reducers');
 
 module.exports = {
     beforeTest: t => {
-        return t.createContext('permutation', 'permutation', null, 1000/*timeout/ms*/);
+        return t.createContext('combination', 'combination', null, 1000/*timeout/ms*/);
     },
 
     tests: {
-        'typical permutation': context => {
+        'typical combination': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [true, false];
-            const p = permutation(ar1)
+            const p = combination(ar1)
                 .with(ar2)
                 .with(ar3);
             return p
@@ -22,9 +22,9 @@ module.exports = {
                     context.equal(ar1.length * ar2.length * ar3.length, result.length);
                 });
         },
-        'zeroed permutation': context => {
+        'zeroed combination': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [];
-            const p = permutation(ar1)
+            const p = combination(ar1)
                 .with(ar2)
                 .with(ar3);
             return p
@@ -33,18 +33,18 @@ module.exports = {
                     context.equal(0, result.length);
                 });
         },
-        'singular permutation': context => {
+        'singular combination': context => {
             const ar1 = [1, 2];
-            const p = permutation(ar1);
+            const p = combination(ar1);
             return p
                 .reduce(commonReducers.toArray)
                 .then(result => {
                     context.deepEqual(result, [[1], [2]]);
                 });
         },
-        'filter on permutation': context => {
+        'filter on combination': context => {
             const ar1 = [1, 2], ar2 = ['a', 'b', 'c'], ar3 = [true, false],
-                p = permutation(ar1)
+                p = combination(ar1)
                     .with(ar2)
                     .filter((num, char) => char === 'b')
                     .with(ar3);

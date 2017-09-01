@@ -3,19 +3,19 @@
 const lazyApiFactory = require('./src/lazy-api-factory');
 const standardTransforms = require('./src/standard-transforms');
 const commonReducers = require('./src/common-reducers');
-const permutation = require('./src/permutation');
+const combination = require('./src/combination');
 
 function createDefaultApi () {
     const lazyApi = lazyApiFactory(standardTransforms);
     return Object.assign({}, commonReducers, {
         iterateOver: lazyApi.iterateOver,
-        permutation: (iterable) => permutation(iterable, lazyApi)
+        combinations: (iterable) => combination(iterable, lazyApi)
     });
 }
 
 module.exports = {
     makeLazyApi: (transformers = standardTransforms) => lazyApiFactory(transformers),
     reducers: commonReducers,
-    permutation: (iterable, lazyApi) => permutation(iterable, lazyApi),
+    combinations: (iterable, lazyApi) => combination(iterable, lazyApi),
     defaultApi: createDefaultApi()
 };

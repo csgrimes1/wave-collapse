@@ -21,7 +21,7 @@ function distance (townIndex1, townIndex2) {
     return delta === 3 ? 1 : delta;
 }
 
-waveCollapse.permutation(teams)
+waveCollapse.combinations(teams)
     .with(teams)
     .filter((teamA, teamB) => {
         if (teamA.teamName === teamB.teamName) {

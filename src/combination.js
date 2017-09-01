@@ -4,7 +4,7 @@ const lazyApiFactory = require('./lazy-api-factory');
 const standardTransforms = require('./standard-transforms');
 const defaultLazyApi = lazyApiFactory(standardTransforms);
 
-module.exports = function startPermutation (iterad, lazyApi = defaultLazyApi) {
+module.exports = function startCombination (iterad, lazyApi = defaultLazyApi) {
     function compose (previous, current) {
         const currentReplayable = Array.from(lazyApi.iterateOver(current));
         return lazyApi.iterateOver(previous).map(stack =>
