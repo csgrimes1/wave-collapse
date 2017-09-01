@@ -4,10 +4,7 @@ node_js:
 - '7'
 - '8'
 
-#jobs:
-#  include:
 deploy:
-#  - stage: npm release
   api_key:
     secure: NREQ6FjaFdoJ6C7JbHJwFXOJRjsb4QdRvHBo8Ba/jKGuodYKa54LCSK7R8Exyz4FDutcSJNYarH6HcjkcBZvP1G/MsRIg4Zto9Opv3k1bz++5HV+X0bW+HAQaDyKpsJeqZLpEx7qGWtm3D4Quj+yjB9BWMP060xaxcZvCDz2MCs+W8nnCTQTH79F4X/sufbPc/btkMZtvY0AEO2F6aIv3xnWjz+9IbJUHNwWGSsATxuXyK0wfm9ALg3+O0KwBQ8EIxFqeRRO/K2jwHXmqY16sMeEPvwP6YUsoY6uV6RMXyVjjXV8TkAppPwa2TH8Vyw13quYq0GXdDRlejGFSchc8W/MFFRI+5DfkA+d8yGw+KtjI4kRYp+T0txdbTKrsM5UTaFUMLOen3cyiIPB9SbhW6kgfq81h4+IjVe+co+st3OYXc2Yu/1T3EXimT3XEftuGTHEFF4sb9UDC7he1nrLdS9NwvUv+cn82BgN9cins8uWGNSlqILFoYX73MmXJxvsGkhywX1xSb7egYGzrncSoDlbd6fTC20XlG5eCsIlNiLojqOc0Ya0l0ZS4HqY4Tx0jm0nacuG3DJ6C2jWpsVtyO5qMINMzI9mR2OuttQO7tNdrMZKH8XgYW4mKa+ocG5bB2b91yhgJtB0q8Vv/JfKGQ6Jkl62fG5HlYsbIKHmiqs=
   provider: npm
