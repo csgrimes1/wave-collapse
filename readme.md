@@ -58,14 +58,14 @@ Please see the [examples](https://github.com/csgrimes1/wave-collapse/tree/master
 The API is built into composable, pluggable components. There are four types of
 components used in this library:
 
-1. *Transformers* are functions that handle the math of transforming iterables. By *math*, I
-mean that every call to _map_, _filter_, _flatten_, _skip_, etc. takes one element from
+1. *Transformers* are functions that handle the math of transforming iterable elements.
+By *math*, I mean that every call to _map_, _filter_, _flatten_, _skip_, etc. takes one element from
 the underlying iterable and transforms it to 0..n resulting elements. A *map*
 operation is 1:1. A _filter_ operation is either 1:0 or 1:1. A _flatten_ operation
 is 1:n. To further illustrate the mathiness of transformers, they operate
 through function composition and never cause an iteration to start. They're _lazy_:
 they wait for terminating functions called *reducers* to pull from the iterator.
-2. *Reducers* are terminating functions that start consuming from an interation,
+2. *Reducers* are terminating functions that start consuming from an iteration,
 then collect and summarize the results. Familiar reducers include *sum* and *average*,
 but often the developer will provide their own reducer callback.
 3. *Iterables and Iterators* are familiar from ECMAScript 6. This API makes
@@ -126,5 +126,25 @@ result: [ [ 'a', 1 ],
   [ 'c', 1 ],
   [ 'c', 2 ],
   [ 'c', 4 ] ]
+CompletionMonad { synchronous: true, value: undefined, status: 0 }
+>
+>//Sum, but start the summing at 100...
+> waveCollapse.iterateOver([3,4,5])
+  .reduce(waveCollapse.sum, 100)
+  .then(result => console.log('result:', result));
+result: 112
+CompletionMonad { synchronous: true, value: undefined, status: 0 }
+>
+> waveCollapse.iterateOver([3,4,5])
+  .reduce(waveCollapse.average)
+  .then(result => console.log('result:', result));
+result: 4
+CompletionMonad { synchronous: true, value: undefined, status: 0 }
+>
+>//Custom accumulator
+> waveCollapse.iterateOver([3,4,5])
+  .reduce((accum,current) => accum * current, 1)
+  .then(result => console.log('result:', result));
+result: 60
 CompletionMonad { synchronous: true, value: undefined, status: 0 }
 ```
