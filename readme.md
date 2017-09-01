@@ -51,7 +51,7 @@ npm install --save wave-collapse
 The module exports (2) functions, `makeLazyApi` and `combination`. It also exports
 `reducers` and `defaultApi`, the purpose of which we will describe below. 
 
-Please see the [examples](./examples) for usage.
+Please see the [examples](https://github.com/csgrimes1/wave-collapse/tree/master/examples) for usage.
 
 #### API Design
 
@@ -82,7 +82,7 @@ and it also supports filtering.
 #### REPL Fun
 
 ```bash
-> const waveCollapse = require('./').defaultApi;
+> const waveCollapse = require('wave-collapse').defaultApi;
 >
 > waveCollapse.iterateOver([1, 2, 3])
   .map(x => 2 * x)
