@@ -19,9 +19,10 @@ map/reduce paradigm to make iteration asynchronous.
 
 Cool. Lazy, asynchronous (or synchronous) iteration. Yawn (lazy yawn).
 
-In addition to supporting lazy iteration, I wanted the library to be able to iterateOver over
+In addition to supporting lazy iteration, I wanted the library to be able to iterate over
 unions. Scala has list comprehension support allowing you to permute lists together in a
-union, and at each level of combination, you can filter. The syntax is a little rough
+union, and at each level of combination, you can filter with a predicate. The Scala syntax
+is a little rough
 on the eyes. This library supports the equivalent functionality in a simple, fluent
 syntax. It's not as terse, but in the spirit of ECMAScript, it should be readable and
 somewhat intuitive.
@@ -78,6 +79,63 @@ stops.
 4. *Combination* refers to combining each element with each element in one or
 more other sets. The feature works similar to the *for comprehension* in Scala,
 and it also supports filtering. 
+
+#### The defaultApi
+
+```javascript 1.6
+const waveCollapse = require('wave-collapse').defaultApi;
+```
+
+##### Iterators
+
+###### iterator.map (transform)  where transform: (value, index) => result
+Puts the return value into the output iterator.
+###### iterator.filter (predicate) where predicate (value, index) => result
+If result is truthy, then `value` is included in the output iterator. Otherwise,
+it is excluded.
+###### iterator.flatten ()
+Emits the members of nested iterators in the output iterator.
+###### iterator.take (number)
+Stops the output iterator when `number` elements have been covered. This is useful
+when iterating over an infinite generator.
+###### iterator.takeWhile (predicate) where predicate (value, index) => result
+Stops the output iterator when `predicate` returns an untruthy result.
+###### iterator.skip (number)
+Hides the first `number` elements of the iterator from the output iterator.
+###### iterator.skipWhile (predicate) where predicate (value, index) => result
+Hides elements from the output iterator until `predicate` returns an untruthy result.
+Then, all elements are returned.
+###### iterator.reduce (reducer, initialValue) where reducer (accum, current, index) => nextAccum
+Forces iteration to start. For each element of the underlying iterator, this function
+is called, and it accumulates a result. There are three common reducers available through
+`defaultApi`: `sum`, `average`, and `toArray`'
+
+Note that the reducer semantics are not sufficient to complete certain types of operations.
+For example, `average` requires a `sum` followed by a post-processing step to divide the
+sum by the number of elements. Therefore, if `reducer` has a property named `postAccum`,
+it will be called as a function with the following signature:
+```javascript 1.6
+(accumulation, count) => finalResult
+```
+
+###### defaultApi.iterateOver (target) where target is Iterator or Iterable
+Returns an iterator in a lazy state. This iterator is not semantically equal to
+an ECMAScript `Iterator`, as it has a different interface. Rather, this iterator object
+has transformer methods (like `map` and `filter`) that compose with each other without
+starting consumption of `target`. Finally, when the user calls `reduce`, this is when
+iteration effectively starts.
+
+###### combinator.with(other) where other is Iterator or Iterable
+Returns a `Combinator` that is the union of the context `Combinator` and `other`.
+
+###### combinator.filter(predicate) where predicate: (a, b, c, ..., z) => result
+The parameters `a, b, c`, etc. represent unique combinations of the lists in the context
+`Combinator`. There will be one more parameter than the number of calls to `with` in the
+call chain. When the predicate result is falsy, the combination will be excluded from
+the output `Combinator`.
+
+###### defaultApi.combinations (target) where target is Iterator or Iterable
+Returns a `Combinator` object that can create unions with other lists.
 
 #### REPL Fun
 
