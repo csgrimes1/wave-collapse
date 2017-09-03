@@ -148,3 +148,6 @@ CompletionMonad { synchronous: true, value: undefined, status: 0 }
 result: 60
 CompletionMonad { synchronous: true, value: undefined, status: 0 }
 ```
+
+#### Further Reading 
+* [Wiki](https://github.com/csgrimes1/wave-collapse/wiki)

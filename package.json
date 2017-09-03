@@ -1,7 +1,8 @@
 {
   "name": "wave-collapse",
+  "repository": "https://github.com/csgrimes1/wave-collapse",
   "version": "1.0.4",
-  "description": "Efficient iteration over any object type.",
+  "description": "Lazy, synchronous/asynchronous iteration + combinatorics.",
   "main": "index.js",
   "scripts": {
     "lint": "toolbin/lint.sh",
