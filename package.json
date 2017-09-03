@@ -1,7 +1,7 @@
 {
   "name": "wave-collapse",
   "repository": "https://github.com/csgrimes1/wave-collapse",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Lazy, synchronous/asynchronous iteration + combinatorics.",
   "main": "index.js",
   "scripts": {
