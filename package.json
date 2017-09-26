@@ -1,14 +1,14 @@
 {
   "name": "wave-collapse",
   "repository": "https://github.com/csgrimes1/wave-collapse",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Lazy, synchronous/asynchronous iteration + combinatorics.",
   "main": "index.js",
   "scripts": {
     "lint": "toolbin/lint.sh",
     "newtest": "toolbin/newtest.sh",
     "plato": "$(npm bin)/plato -e $(pwd)/.eslintrc.json -r -n -d ./.plato **/*.js",
-    "test": "toolbin/lint.sh && $(npm bin)/chi-run test *.test.js .testresults default",
+    "test": "$(npm bin)/chi-run test *.test.js .testresults default",
     "testcov": "$(npm bin)/chi-run test *.test.js .testresults default coverage xunit"
   },
   "keywords": [
@@ -26,7 +26,7 @@
   "devDependencies": {
     "bluebird": "3.5.0",
     "chihuahua-reporters": "2.0.2",
-    "chihuahua-tester": "1.0.6",
+    "chihuahua-tester": "1.0.8",
     "eslint": "^3.19.0",
     "eslint-config-recommended": "^1.5.0",
     "nyc": "^11.0.2",

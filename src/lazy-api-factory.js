@@ -4,6 +4,7 @@ const sto = require('./stack-transformation-over');
 const curry = require('./curry');
 const reduce = require('./reduce');
 const commonReducers = require('./common-reducers');
+const instructions = require('./instructions');
 
 function toIterable (iterable, obj) {   //eslint-disable-line
     return Object.assign({}, obj, {
@@ -13,6 +14,19 @@ function toIterable (iterable, obj) {   //eslint-disable-line
             }
         }
     });
+}
+
+function *syncIterator (monadicIterable) {
+    for (const monad of monadicIterable) {
+        if (!monad.synchronous)
+            throw new Error('Iterable is not synchronous');
+        const value = monad.value;
+        if (value === instructions.STOP)
+            return;
+        else if (value !== instructions.SKIP) {
+            yield value;
+        }
+    }
 }
 
 function bind (iterable, transformBuilders) {
@@ -35,7 +49,8 @@ function bind (iterable, transformBuilders) {
     const x3 = Object.assign.apply(null, x2);
     const reduction = {
         reduce: curry(iterable, reduce),
-        visit: (visitorCallback) => reduce(iterable, commonReducers.visit(visitorCallback))
+        visit: (visitorCallback) => reduce(iterable, commonReducers.visit(visitorCallback)),
+        startSyncIterator: () => syncIterator(iterable)
     };
     const info = {
         type: myType,

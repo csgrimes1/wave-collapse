@@ -4,6 +4,7 @@ const lazyApiBuilder = require('../src/lazy-api-factory');
 const ignoreMarker = {ignore: true};
 const generators = require('./generators');
 const sinon = require('sinon');
+const instructions = require('../src/instructions');
 
 function mapTransform (mapping) {
     return function *(atomicValueMonad, index) {
@@ -106,6 +107,18 @@ module.exports = {
                 .then(() => {
                     context.equal(visitorSpy.callCount, 4);
                 });
+        },
+        'synchronous iteration': (context) => {
+            const ar = [1, 2, 3];
+            const result = Array.from(api.iterateOver(ar)
+                .startSyncIterator());
+            context.deepEqual(result, ar);
+        },
+        'synchronous iteration with instructions': (context) => {
+            const ar = [1, 2, instructions.SKIP, instructions.STOP, 3];
+            const result = Array.from(api.iterateOver(ar)
+                .startSyncIterator());
+            context.deepEqual(result, [1, 2]);
         }
     }
 };
