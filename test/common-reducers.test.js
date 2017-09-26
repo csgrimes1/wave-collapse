@@ -42,11 +42,13 @@ module.exports = {
                 });
         },
         'toArray operation': context => {
-            const ar = ['a', 'b', 'c', 'd'];
+            const ar = ['a', 'b', 'c', 'd', 'e', 'f'];
+            const takes = 3;
             return api.iterateOver(ar)
+                .take(takes)
                 .reduce(index.reducers.toArray)
                 .then(result => {
-                    context.deepEqual(result, ar);
+                    context.deepEqual(result, ar.slice(0, takes));
                 });
         },
         'zero length toArray operation': context => {
