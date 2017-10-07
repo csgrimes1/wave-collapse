@@ -18,6 +18,9 @@ module.exports = function consume (iterator, callback) {
                 //Keep looping
                 return true;
             }
+            if (value === instructions.STOP) {
+                return false;
+            }
             if (callback(value, count)) {
                 count++;
                 return true;

@@ -12,12 +12,7 @@ function reduce (lazyIterable, reduceCallback, startAccum) {
     }
     let accumulation = startAccum;
     return consume(lazyIterable, (value, index) => {
-        if (value === instructions.STOP) {
-            return false;
-        }
-        if (value !== instructions.SKIP) {
-            accumulation = reduceCallback(accumulation, value, index);
-        }
+        accumulation = reduceCallback(accumulation, value, index);
         if (accumulation === instructions.STOP) {
             return false;
         }

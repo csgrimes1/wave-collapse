@@ -21,7 +21,7 @@ module.exports = {
         'simple stacking': (context) => {
             const val = 2112;
             const series = createSeries(3);
-            const results = Array.from(stack0n.transform(val, 0, series));
+            const results = Array.from(stack0n.transform(val, series));
             context.ok(results[0] instanceof completionMonad.classType, 'should yield sync monad');
             context.deepEqual(results.map(r => r.value), [2112, 2113, 2114]);
         },
@@ -30,7 +30,7 @@ module.exports = {
             const thenSpy = sinon.spy();
             const val = Promise.resolve(2112);
             const series = createSeries(3);
-            const results = Array.from(stack0n.transform(val, 1, series));
+            const results = Array.from(stack0n.transform(val, series));
             const p = Promise.all(results)
                 .then(outputs => {
                     thenSpy();
