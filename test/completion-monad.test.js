@@ -39,6 +39,23 @@ module.exports = {
             context.ok(syncPromise.isFullfilled(p));
             context.ok(!syncPromise.isRejected(p));
         },
+        'resolving an error synchronously yields error': context => {
+            const spy = sinon.spy(),
+                err = new Error(),
+                rejected = syncPromise.reject(err),
+                catchSpy = sinon.spy();
+
+            syncPromise.resolve(rejected)
+                .then(result => {
+                    spy();
+                    context.equal(result, rejected, 'should result in passed value');
+                })
+                .catch(() => {
+                    catchSpy();
+                });
+            context.ok(!spy.called, 'then spy called');
+            context.ok(catchSpy.called, 'catch spy not called');
+        },
         'reject with error in callback runs synchronously': context => {
             const catch1spy = sinon.spy(),
                 err1 = new Error('what'),
@@ -110,6 +127,26 @@ module.exports = {
                 spy = sinon.spy(),
                 thenSpy = sinon.spy(),
                 pTest = syncPromise.reject(p)
+                    .then(() => {
+                        thenSpy();
+                    })
+                    .catch(result => {
+                        spy();
+                        context.equal(result, err, 'should get passed value');
+                    });
+            context.ok(!spy.called, 'spy not called synchronously');
+            return pTest
+                .then(() => {
+                    context.ok(!thenSpy.called, 'then callback untouched');
+                    context.ok(spy.called, 'spy called asynchronously');
+                });
+        },
+        'yields rejected native promise when resolving rejected native promise': context => {
+            const err = new Error('bad'),
+                p = Promise.reject(err),
+                spy = sinon.spy(),
+                thenSpy = sinon.spy(),
+                pTest = syncPromise.resolve(p)
                     .then(() => {
                         thenSpy();
                     })
@@ -253,6 +290,11 @@ module.exports = {
                     context.ok(!thenSpy.called, 'then spy called');
                     context.ok(catchSpy.called, 'catch spy called');
                 });
+        },
+        'supports valueOf semantics': context => {
+            const sp = syncPromise.resolve(2);
+
+            context.equal(sp + 1, 3);
         }
     }
 };

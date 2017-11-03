@@ -14,7 +14,9 @@ class CompletionMonad {
         if (isAsyncPromise(value)) {
             return Promise.resolve(value);
         } else if (value instanceof CompletionMonad) {
-            return CompletionMonad.resolve(value.value);
+            return value.hasOwnProperty('value')
+                ? CompletionMonad.resolve(value.value)
+                : CompletionMonad.reject(value.error);
         }
         const p = new CompletionMonad();
 
@@ -41,6 +43,10 @@ class CompletionMonad {
         } catch (x) {
             return CompletionMonad.reject(x);
         }
+    }
+
+    valueOf() {
+        return this.value;
     }
 
     then(callback) {

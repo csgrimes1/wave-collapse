@@ -21,18 +21,24 @@ module.exports = {
         },
         'average operation': context => {
             const ar = [20, 25, 30];
-            return api.iterateOver(ar)
+            const average = api.iterateOver(ar)
                 .reduce(commonReducers.average)
                 .then(result => {
                     context.equal(result, 25);
+                    return result;
                 });
+            //Illustrate valueOf semantics
+            context.equal(average, 25);
         },
         'count operation': context => {
-            return api.iterateOver([1, 2, 3])
+            const count = api.iterateOver([1, 2, 3])
                 .reduce(commonReducers.count)
                 .then(result => {
                     context.equal(result, 3);
+                    return 3;
                 });
+            //Illustrate valueOf semantics
+            context.equal(count, 3);
         },
         'count operation on zero length iterable': context => {
             return api.iterateOver([])

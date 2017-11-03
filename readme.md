@@ -199,6 +199,14 @@ CompletionMonad { synchronous: true, value: undefined, status: 0 }
 result: 4
 CompletionMonad { synchronous: true, value: undefined, status: 0 }
 >
+>//valueOf semantics applied to synchronous iterations
+> waveCollapse.iterateOver([4,5,6])
+  .reduce(waveCollapse.sum);
+{ [Number: 15] synchronous: true, value: 15, status: 0 }
+> waveCollapse.iterateOver([4,5,6])
+  .reduce(waveCollapse.sum) + 0;
+15
+>
 >//Custom accumulator
 > waveCollapse.iterateOver([3,4,5])
   .reduce((accum,current) => accum * current, 1)
@@ -206,6 +214,20 @@ CompletionMonad { synchronous: true, value: undefined, status: 0 }
 result: 60
 CompletionMonad { synchronous: true, value: undefined, status: 0 }
 ```
+
+#### valueOf() semantics
+
+Primitive value types like number, boolean, and string are "boxed"
+when being treated like objects. When boxed, the primitive type
+is an object with a `prototype.valueOf()` method. This method allows it to be treated
+as a primitive.
+
+Applying this rule, the API's `CompletionMonad` type can represent what
+is, effectively, a synchronous promise with a primitive type's interface.
+ This class allows the API to treat everything in an iteration as if it was a promise, whether
+or not it is asynchronous. As you may have noticed in the code above,
+most iterations end in a call to `then()`. However, for synchronous
+operations, the `valueOf()` semantics make the call to`then()` optional.
 
 #### Further Reading 
 * [Wiki](https://github.com/csgrimes1/wave-collapse/wiki)
